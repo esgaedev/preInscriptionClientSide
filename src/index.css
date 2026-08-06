@@ -1,0 +1,95 @@
+@import 'tailwindcss';
+
+@theme {
+  /* ESGAE brand palette, derived from esgae.org */
+  --color-primary-50: #eef4fb;
+  --color-primary-100: #d6e5f3;
+  --color-primary-200: #adc9e7;
+  --color-primary-300: #7ea9da;
+  --color-primary-400: #4a80c2;
+  --color-primary-500: #1f5da3;
+  --color-primary-600: #0d4483;
+  --color-primary-700: #00326e;
+  --color-primary-800: #00285a;
+  --color-primary-900: #001c40;
+  --color-primary-950: #00112a;
+
+  --color-secondary-50: #fff8ec;
+  --color-secondary-100: #ffeec9;
+  --color-secondary-200: #ffdb92;
+  --color-secondary-300: #ffc35c;
+  --color-secondary-400: #fbaf42;
+  --color-secondary-500: #f8a539;
+  --color-secondary-600: #e0862a;
+  --color-secondary-700: #bb6620;
+  --color-secondary-800: #94501e;
+  --color-secondary-900: #78421d;
+
+  --color-ink: #2c3e50;
+  --color-ink-soft: #43586f;
+
+  /* Dark mode palette */
+  --color-dark-bg: #0F172A;
+  --color-dark-card: #1E293B;
+  --color-dark-surface: #334155;
+  --color-dark-text: #F8FAFC;
+  --color-dark-text-secondary: #CBD5E1;
+  --color-dark-border: #334155;
+
+  --font-heading: 'Work Sans', system-ui, sans-serif;
+  --font-body: 'Open Sans', system-ui, sans-serif;
+
+  --shadow-soft: 0 10px 40px -10px rgba(0, 50, 110, 0.18);
+  --shadow-soft-lg: 0 25px 60px -15px rgba(0, 50, 110, 0.25);
+  
+  --shadow-soft-dark: 0 10px 40px -10px rgba(0, 0, 0, 0.5);
+  --shadow-soft-lg-dark: 0 25px 60px -15px rgba(0, 0, 0, 0.6);
+}
+
+/* Force dark mode to use class strategy */
+@variant dark (&:where(.dark, .dark *));
+
+@layer base {
+  * {
+    @apply border-primary-100 dark:border-dark-border;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-slate-50 text-ink font-body antialiased;
+    @apply dark:bg-dark-bg dark:text-dark-text;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-heading text-primary-700 dark:text-primary-400;
+    transition: color 0.3s ease;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-secondary-500);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+}
+
+@layer utilities {
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    @apply bg-primary-200 dark:bg-dark-surface rounded-full;
+  }
+  .scrollbar-thin::-webkit-scrollbar-track {
+    @apply bg-slate-100 dark:bg-dark-bg;
+  }
+}
