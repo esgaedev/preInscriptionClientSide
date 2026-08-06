@@ -124,10 +124,12 @@ export function PersonalStep() {
                 const option = nationalitiesQuery.data?.find((n) => n.IDNationalité === id);
                 setValue('IDNationalité', id, { shouldValidate: true });
                 setValue('DésignNationalité', option?.DésignNationalité ?? '', { shouldValidate: true });
-                // Auto-remplir le pays selon la nationalité
-                const suggestedCountry = getCountryFromNationality(id);
-                if (suggestedCountry) {
-                  setValue('PaysOrigine', suggestedCountry, { shouldValidate: true });
+                // Auto-remplir le pays selon le libellé de la nationalité
+                if (option?.DésignNationalité) {
+                  const suggestedCountry = getCountryFromNationality(option.DésignNationalité);
+                  if (suggestedCountry) {
+                    setValue('PaysOrigine', suggestedCountry, { shouldValidate: true });
+                  }
                 }
               }}
             />

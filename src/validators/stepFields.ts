@@ -15,6 +15,7 @@ export const STEP_FIELDS: Partial<Record<StepId, (keyof PreRegistrationFormValue
     'Photo',
   ],
 
+  contact: ['Téléphone1', 'Téléphone2', 'Email', 'Adresse', 'Quartier', 'IDArrondissement'],
   family: [
     'SituationMatrimoniale',
     'OrphelinPère',
@@ -28,11 +29,14 @@ export const STEP_FIELDS: Partial<Record<StepId, (keyof PreRegistrationFormValue
     'SecteurActivité',
     'ExpérienceProf',
     'CréateurEntreprise',
-    // Les champs suivants sont validés dynamiquement selon si l'utilisateur a une activité
-    // 'ProfessionExercée',
-    // 'FonctionActuelle',
-    // 'StructureTravail',
-    // 'CatégoriePro',
+    // Ces champs ne sont réellement requis (voir le superRefine de
+    // preRegistrationSchema) que si SecteurActivité !== « Aucune activité » —
+    // les lister ici est donc sans danger : aucune erreur ne remonte quand
+    // ils ne s'appliquent pas.
+    'ProfessionExercée',
+    'FonctionActuelle',
+    'StructureTravail',
+    'CatégoriePro',
   ],
   parents: [
     'NomPrenomPère',

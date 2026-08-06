@@ -1,5 +1,5 @@
 import { useFormContext } from 'react-hook-form';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 import { CheckCircle2, Copy, Plus, SendHorizonal, ShieldAlert } from 'lucide-react';

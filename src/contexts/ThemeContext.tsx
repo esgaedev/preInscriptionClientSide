@@ -22,11 +22,8 @@ const THEME_STORAGE_KEY = 'esgai-theme';
  */
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const [theme, setTheme] = useState<Theme>('light');
-  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
-    setIsMounted(true);
-    
     // Récupérer le thème sauvegardé ou détecter la préférence système
     const savedTheme = localStorage.getItem(THEME_STORAGE_KEY) as Theme | null;
     

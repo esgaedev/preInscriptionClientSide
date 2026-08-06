@@ -86,29 +86,6 @@ export function PreRegistrationPage() {
         toast.error('Certaines informations sont invalides. Vérifiez les étapes précédentes.');
         return;
       }
-    } else if (currentStep.id === 'professional') {
-      // Validation spéciale pour l'étape professionnelle
-      const secteurActivité = getValues('SecteurActivité');
-      const NO_ACTIVITY_ID = 4;
-      
-      // Toujours valider les champs de base
-      const baseFields = STEP_FIELDS[currentStep.id];
-      const baseValid = baseFields ? await trigger(baseFields) : true;
-      
-      if (!baseValid) {
-        toast.error('Veuillez corriger les champs en erreur avant de continuer.');
-        return;
-      }
-      
-      // Si l'utilisateur a une activité, valider les champs professionnels
-      if (secteurActivité !== NO_ACTIVITY_ID) {
-        const proFields = ['ProfessionExercée', 'FonctionActuelle', 'StructureTravail', 'CatégoriePro'];
-        const proValid = await trigger(proFields);
-        if (!proValid) {
-          toast.error('Veuillez remplir tous les champs professionnels.');
-          return;
-        }
-      }
     } else {
       const fields = STEP_FIELDS[currentStep.id];
       const valid = fields ? await trigger(fields) : true;

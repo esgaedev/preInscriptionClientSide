@@ -13,9 +13,7 @@ export interface Diploma {
 export interface LigneNiveau {
   /** Client-only key for React lists / edit-in-place; stripped before POST. */
   _localId: string;
-  /** Sent as 0 for a new, not-yet-persisted row — the API assigns the real id. */
-  IDLigneNiveau: number;
-  /** Diplôme ID (from API) - stored as string for form compatibility but sent as number */
+  /** Free-text name of the diploma, e.g. "Licence Informatique". */
   Diplôme: string;
   Mention: string;
   Année: number;

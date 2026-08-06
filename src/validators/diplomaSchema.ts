@@ -4,7 +4,6 @@ const currentYear = new Date().getFullYear();
 
 export const diplomaLineSchema = z.object({
   _localId: z.string(),
-  IDLigneNiveau: z.number(),
   Diplôme: z.string().min(1, 'Le nom du diplôme est requis.'),
   Mention: z.string().min(1, 'Veuillez sélectionner une mention.'),
   Année: z

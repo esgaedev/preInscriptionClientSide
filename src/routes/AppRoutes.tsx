@@ -3,7 +3,7 @@ import { Routes, Route } from 'react-router-dom';
 import { MainLayout } from '@/layouts/MainLayout';
 import { HomePage } from '@/pages/HomePage';
 import { NotFoundPage } from '@/pages/NotFoundPage';
-import { Loader } from '@/components/ui/Loader';
+import { PreRegistrationSkeleton } from '@/components/form/PreRegistrationSkeleton';
 
 const PreRegistrationPage = lazy(() =>
   import('@/pages/PreRegistrationPage').then((m) => ({ default: m.PreRegistrationPage })),
@@ -17,7 +17,7 @@ export function AppRoutes() {
         <Route
           path="/pre-inscription"
           element={
-            <Suspense fallback={<Loader label="Chargement du formulaire..." />}>
+            <Suspense fallback={<PreRegistrationSkeleton />}>
               <PreRegistrationPage />
             </Suspense>
           }

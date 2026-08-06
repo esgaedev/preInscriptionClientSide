@@ -2,38 +2,45 @@
  * Utilitaires de validation et de formatage pour le formulaire
  */
 
-// Mapping nationalité → pays (à compléter selon vos données API)
-// Note: Vous devrez peut-être ajuster ces valeurs selon les IDs réels de votre API
-const NATIONALITY_TO_COUNTRY: Record<string, string> = {
-  '1': 'Cameroun',
-  '2': 'France',
-  '3': 'Sénégal',
-  '4': 'Côte d\'Ivoire',
-  '5': 'Mali',
-  '6': 'Gabon',
-  '7': 'Congo',
-  '8': 'Togo',
-  '9': 'Bénin',
-  '10': 'Burkina Faso',
-  '11': 'Guinée',
-  '12': 'Niger',
-  '13': 'Tchad',
-  '14': 'Centrafrique',
-  '15': 'Rwanda',
-  '16': 'Burundi',
-  '17': 'Congo Brazzaville',
-  '18': 'Angola',
-  '19': 'Nigeria',
-  '20': 'Ghana',
-  // Ajoutez d'autres mappings selon vos données de nationalités de l'API
+// Mapping nationalité → pays, indexé par le libellé (`DésignNationalité`)
+// renvoyé par l'API plutôt que par son id. Les ids sont des clés primaires
+// arbitraires côté backend (non stables), alors que ces libellés reflètent
+// les nationalités réellement configurées dans /API/Nationalite.
+const NATIONALITY_LABEL_TO_COUNTRY: Record<string, string> = {
+  'Congolaise': 'Congo',
+  'Congolaise (RDC)': 'République démocratique du Congo',
+  'Française': 'France',
+  'Camerounaise': 'Cameroun',
+  'Tchadienne': 'Tchad',
+  'Malienne': 'Mali',
+  'Centrafricaine': 'République centrafricaine',
+  'Rwandaise': 'Rwanda',
+  'Burkinabé': 'Burkina Faso',
+  'Ivoirienne': "Côte d'Ivoire",
+  'Beninoise': 'Bénin',
+  'Angolaise': 'Angola',
+  'Togolaise': 'Togo',
+  'Gabonaise': 'Gabon',
+  'Portugaise': 'Portugal',
+  'Chinoise': 'Chine',
+  'Comorienne': 'Comores',
+  'Équatoguinéenne': 'Guinée équatoriale',
+  'Américaine': 'États-Unis',
+  'Haïtienne': 'Haïti',
+  'Malgache': 'Madagascar',
+  'Bissau-Guinéenne': 'Guinée-Bissau',
+  'Guinéenne': 'Guinée',
+  'Burundaise': 'Burundi',
 };
 
 /**
- * Propose le pays correspondant à la nationalité choisie
+ * Propose le pays correspondant au libellé de nationalité choisi (ex:
+ * "Camerounaise" → "Cameroun"). Renvoie une chaîne vide si le libellé n'est
+ * pas reconnu, pour ne jamais écraser silencieusement le pays saisi par
+ * l'utilisateur avec une valeur incorrecte.
  */
-export function getCountryFromNationality(nationalityId: number | string): string {
-  const id = String(nationalityId);
-  return NATIONALITY_TO_COUNTRY[id] || '';
+export function getCountryFromNationality(designNationalite: string): string {
+  return NATIONALITY_LABEL_TO_COUNTRY[designNationalite] ?? '';
 }
 
 /**

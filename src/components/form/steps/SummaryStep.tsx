@@ -18,7 +18,6 @@ import {
   SECTEUR_ACTIVITE_OPTIONS,
 } from '@/constants/options';
 import { getNiveauLabel } from '@/constants/niveauLabels';
-import { useLevels } from '@/hooks/useLevels';
 import { useCourses } from '@/hooks/useCourses';
 import type { PreRegistrationFormValues, StepId } from '@/types';
 
@@ -32,18 +31,12 @@ interface SummaryStepProps {
 export function SummaryStep({ onEditStep }: SummaryStepProps) {
   const { watch } = useFormContext<PreRegistrationFormValues>();
   const values = watch();
-  const levelsQuery = useLevels(values.AnneeAcademique);
   const coursesQuery = useCourses(values.AnneeAcademique);
 
   // Optimisation: useMemo pour ne pas recalculer les labels à chaque rendu
-  const apiLevelLabel = useMemo(
-    () => levelsQuery.data?.find((l) => l.Niveau === values.Niveau)?.Libelle,
-    [levelsQuery.data, values.Niveau]
-  );
-  
   const levelLabel = useMemo(
-    () => values.Niveau ? getNiveauLabel(values.Niveau, apiLevelLabel) : '',
-    [values.Niveau, apiLevelLabel]
+    () => (values.Niveau ? getNiveauLabel(values.Niveau) : ''),
+    [values.Niveau]
   );
   
   const courseLabel = useMemo(

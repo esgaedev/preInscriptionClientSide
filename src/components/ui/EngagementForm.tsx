@@ -180,8 +180,6 @@ export function EngagementForm({
   const savedRead = typeof window !== 'undefined' && localStorage.getItem(CHARTER_READ_KEY) === 'true';
   const savedAccepted = typeof window !== 'undefined' && localStorage.getItem(CHARTER_ACCEPTED_KEY) === 'true';
 
-  // État local pour le mode non contrôlé
-  const [localAccepted, setLocalAccepted] = useState(() => !controlled && savedAccepted);
   const [hasScrolledToBottom, setHasScrolledToBottom] = useState(() => savedRead);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [isChecked, setIsChecked] = useState(() => savedAccepted);
@@ -220,9 +218,6 @@ export function EngagementForm({
     const wordCount = SECTIONS.flatMap((s) => s.items.join(' ').split(/\s+/)).length;
     return Math.max(1, Math.round(wordCount / 200));
   }, []);
-
-  // État d'acceptation (contrôlé ou local)
-  const accepted = controlled ? controlledAccepted : localAccepted;
 
   /**
    * Gestion du scroll avec détection de fin de lecture
@@ -291,13 +286,11 @@ export function EngagementForm({
   const handleCheckboxChange = (checked: boolean) => {
     if (!hasScrolledToBottom) return;
     setIsChecked(checked);
-    if (!controlled) setLocalAccepted(checked);
     onCheckboxChange?.(checked);
   };
 
   const handleAccept = () => {
     if (hasScrolledToBottom && isChecked) {
-      if (!controlled) setLocalAccepted(true);
       onAccept?.();
       toast.success("Charte d'engagement acceptée");
     }
@@ -305,7 +298,6 @@ export function EngagementForm({
 
   const handleCancel = () => {
     if (!controlled) {
-      setLocalAccepted(false);
       setIsChecked(false);
       setHasScrolledToBottom(false);
       setScrollProgress(0);
@@ -314,7 +306,10 @@ export function EngagementForm({
     onCancel?.();
   };
 
-  const isAcceptDisabled = !hasScrolledToBottom || !isChecked;
+  // In controlled mode the checkbox reflects the caller's `accepted` prop
+  // rather than internal state (which only tracks the uncontrolled case).
+  const isCheckedDisplay = controlled ? Boolean(controlledAccepted) : isChecked;
+  const isAcceptDisabled = !hasScrolledToBottom || !isCheckedDisplay;
 
   return (
     <div className="w-full max-w-5xl mx-auto">
@@ -446,7 +441,7 @@ export function EngagementForm({
               <span className="relative mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center">
                 <input
                   type="checkbox"
-                  checked={isChecked}
+                  checked={isCheckedDisplay}
                   disabled={!hasScrolledToBottom}
                   onChange={(e) => handleCheckboxChange(e.target.checked)}
                   className="peer sr-only"
@@ -454,14 +449,14 @@ export function EngagementForm({
                 />
                 <span
                   className={`h-5 w-5 rounded-md border-2 flex items-center justify-center transition-colors peer-focus-visible:ring-2 peer-focus-visible:ring-primary-500 peer-focus-visible:ring-offset-1 ${
-                    isChecked
+                    isCheckedDisplay
                       ? 'bg-primary-600 dark:bg-primary-500 border-primary-600 dark:border-primary-500'
                       : hasScrolledToBottom
                       ? 'border-slate-300 dark:border-dark-surface bg-white dark:bg-dark-card group-hover:border-primary-400 dark:group-hover:border-primary-500'
                       : 'border-slate-200 dark:border-dark-surface bg-slate-100 dark:bg-dark-surface'
                   }`}
                 >
-                  {isChecked && <Check className="h-3.5 w-3.5 text-white" strokeWidth={3} />}
+                  {isCheckedDisplay && <Check className="h-3.5 w-3.5 text-white" strokeWidth={3} />}
                 </span>
               </span>
               <div className="flex-1">
@@ -499,6 +494,15 @@ export function EngagementForm({
             </div>
 
             <div className="flex flex-col-reverse sm:flex-row sm:items-center sm:justify-end gap-2.5 pt-1">
+              {onCancel && (
+                <button
+                  type="button"
+                  onClick={handleCancel}
+                  className="inline-flex items-center justify-center gap-1.5 px-5 py-2.5 rounded-lg border border-slate-200 dark:border-dark-border text-[14px] font-medium text-slate-600 dark:text-dark-text-secondary transition-colors hover:bg-slate-50 dark:hover:bg-dark-surface focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2"
+                >
+                  {cancelButtonText}
+                </button>
+              )}
               {showAcceptButton && (
                 <button
                   type="button"

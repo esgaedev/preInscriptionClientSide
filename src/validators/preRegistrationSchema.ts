@@ -36,6 +36,26 @@ export const preRegistrationSchema = personalSchema
         message: 'Le nom de la mère est requis (ou cochez « orpheline de mère »).',
       });
     }
+
+    const NO_ACTIVITY_ID = 4;
+    if (data.SecteurActivité !== NO_ACTIVITY_ID) {
+      if (!data.ProfessionExercée.trim()) {
+        ctx.addIssue({ code: 'custom', path: ['ProfessionExercée'], message: 'Précisez votre profession exercée.' });
+      }
+      if (!data.FonctionActuelle.trim()) {
+        ctx.addIssue({ code: 'custom', path: ['FonctionActuelle'], message: 'Précisez votre fonction actuelle.' });
+      }
+      if (!data.StructureTravail.trim()) {
+        ctx.addIssue({ code: 'custom', path: ['StructureTravail'], message: 'Précisez votre structure de travail.' });
+      }
+      if (!data.CatégoriePro) {
+        ctx.addIssue({
+          code: 'custom',
+          path: ['CatégoriePro'],
+          message: 'Veuillez sélectionner une catégorie professionnelle.',
+        });
+      }
+    }
   });
 
 export type PreRegistrationSchema = z.infer<typeof preRegistrationSchema>;

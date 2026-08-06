@@ -1,6 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
 import { fetchCourses } from '@/services/courseService';
-import { QUERY_KEYS } from '@/constants/api';
 
 export function useLevels(anneeAcademique: string | undefined) {
   return useQuery({

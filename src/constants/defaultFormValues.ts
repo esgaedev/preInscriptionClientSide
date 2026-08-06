@@ -51,5 +51,18 @@ export const DEFAULT_FORM_VALUES: PreRegistrationFormValues = {
   AnneeAcademique: '',
   Niveau: 0,
   IDParcours: 0,
-  diplomas: [],
+  // A single pre-populated row: DiplomasStep now edits a fixed `diplomas.0.*`
+  // path (no dynamic add/remove), so `_localId` must already be valid from
+  // the start — it's never exposed as an input.
+  diplomas: [
+    {
+      _localId: 'diploma-0',
+      Diplôme: '',
+      Mention: '',
+      Année: new Date().getFullYear(),
+      ETS: '',
+      Lieu: '',
+      NiveauDiplome: 0,
+    },
+  ],
 };
