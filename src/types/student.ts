@@ -33,7 +33,8 @@ export interface STEtudiant {
   SituationMatrimoniale: number;
   /** Id of the activity-sector option (see SECTEUR_ACTIVITE_OPTIONS). */
   SecteurActivité: number;
-  ExpérienceProf: boolean;
+  /** Nombre d'années d'expérience professionnelle (0 = aucune). */
+  ExpérienceProf: number;
   CréateurEntreprise: boolean;
   ProfessionExercée: string;
   FonctionActuelle: string;
@@ -75,13 +76,14 @@ export type STEtudiantPayload = Omit<STEtudiant, 'PreMatricule'>;
  * Exact shape expected by `POST API/pre-inscription` under the `unstEtudiant`
  * key: `Sexe` and the yes/no fields are numeric codes (1/2, 0/1) rather than
  * the ergonomic string/boolean values used internally by the form.
+ * `ExpérienceProf` is already numeric (years of experience) — no conversion
+ * needed for it.
  */
 export type STEtudiantWirePayload = Omit<
   STEtudiantPayload,
-  'Sexe' | 'Boursier' | 'ExpérienceProf' | 'CréateurEntreprise'
+  'Sexe' | 'Boursier' | 'CréateurEntreprise'
 > & {
   Sexe: 1 | 2;
   Boursier: 0 | 1;
-  ExpérienceProf: 0 | 1;
   CréateurEntreprise: 0 | 1;
 };

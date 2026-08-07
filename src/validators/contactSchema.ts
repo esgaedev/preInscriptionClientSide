@@ -9,10 +9,7 @@ export const contactSchema = z.object({
   Email: z.string().min(1, 'L’adresse e-mail est requise.').email('Adresse e-mail invalide.'),
   Adresse: z.string().min(1, 'L’adresse est requise.'),
   Quartier: z.string().min(1, 'Le quartier est requis.'),
-  IDArrondissement: z.number()
-    .int()
-    .min(0, 'L\'arrondissement doit être entre 0 et 10.')
-    .max(10, 'L\'arrondissement doit être entre 0 et 10.'),
+  IDArrondissement: z.number().int().positive('Veuillez sélectionner un arrondissement.'),
   NomPrenom: z.string(),
 });
 

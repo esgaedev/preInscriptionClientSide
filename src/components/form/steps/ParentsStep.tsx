@@ -23,21 +23,36 @@ export function ParentsStep() {
             label="Nom et prénom du père"
             required={!isOrphanFather}
             disabled={isOrphanFather}
+            placeholder="Veuillez renseigner le nom et prénom du père"
             error={errors.NomPrenomPère?.message}
             {...register('NomPrenomPère')}
           />
-          <Input label="Fonction" disabled={isOrphanFather} error={errors.FonctionPère?.message} {...register('FonctionPère')} />
+          <Input
+            label="Fonction"
+            disabled={isOrphanFather}
+            placeholder="Veuillez renseigner la fonction du père"
+            error={errors.FonctionPère?.message}
+            {...register('FonctionPère')}
+          />
           <Input
             label="Lieu de travail"
             disabled={isOrphanFather}
+            placeholder="Veuillez renseigner le lieu de travail du père"
             error={errors.LieuTravailPère?.message}
             {...register('LieuTravailPère')}
           />
-          <Input label="Adresse" disabled={isOrphanFather} error={errors.AdressePère?.message} {...register('AdressePère')} />
+          <Input
+            label="Adresse"
+            disabled={isOrphanFather}
+            placeholder="Veuillez renseigner l’adresse du père"
+            error={errors.AdressePère?.message}
+            {...register('AdressePère')}
+          />
           <Input
             label="Téléphone"
             type="tel"
             disabled={isOrphanFather}
+            placeholder="Veuillez renseigner le téléphone du père"
             error={errors.TéléphonePère?.message}
             {...register('TéléphonePère')}
           />
@@ -50,21 +65,36 @@ export function ParentsStep() {
             label="Nom et prénom de la mère"
             required={!isOrphanMother}
             disabled={isOrphanMother}
+            placeholder="Veuillez renseigner le nom et prénom de la mère"
             error={errors.NomPrenomMère?.message}
             {...register('NomPrenomMère')}
           />
-          <Input label="Fonction" disabled={isOrphanMother} error={errors.FonctionMère?.message} {...register('FonctionMère')} />
+          <Input
+            label="Fonction"
+            disabled={isOrphanMother}
+            placeholder="Veuillez renseigner la fonction de la mère"
+            error={errors.FonctionMère?.message}
+            {...register('FonctionMère')}
+          />
           <Input
             label="Lieu de travail"
             disabled={isOrphanMother}
+            placeholder="Veuillez renseigner le lieu de travail de la mère"
             error={errors.LieuTravailMère?.message}
             {...register('LieuTravailMère')}
           />
-          <Input label="Adresse" disabled={isOrphanMother} error={errors.AdresseMère?.message} {...register('AdresseMère')} />
+          <Input
+            label="Adresse"
+            disabled={isOrphanMother}
+            placeholder="Veuillez renseigner l’adresse de la mère"
+            error={errors.AdresseMère?.message}
+            {...register('AdresseMère')}
+          />
           <Input
             label="Téléphone"
             type="tel"
             disabled={isOrphanMother}
+            placeholder="Veuillez renseigner le téléphone de la mère"
             error={errors.TéléphoneMère?.message}
             {...register('TéléphoneMère')}
           />

@@ -1,4 +1,5 @@
 import type { PreRegistrationFormValues } from '@/types';
+import { NO_ACTIVITY_SECTOR_ID } from './options';
 
 export const DEFAULT_FORM_VALUES: PreRegistrationFormValues = {
   MatriculeBac: '',
@@ -20,8 +21,8 @@ export const DEFAULT_FORM_VALUES: PreRegistrationFormValues = {
   IDArrondissement: 0,
   Quartier: '',
   SituationMatrimoniale: 1,
-  SecteurActivité: 4,
-  ExpérienceProf: false,
+  SecteurActivité: NO_ACTIVITY_SECTOR_ID,
+  ExpérienceProf: 0,
   CréateurEntreprise: false,
   ProfessionExercée: '',
   FonctionActuelle: '',

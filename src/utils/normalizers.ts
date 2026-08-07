@@ -63,3 +63,15 @@ export function extractNationality(raw: unknown): { IDNationalité: number; Dés
     DésignNationalité: label !== undefined ? String(label) : String(id),
   };
 }
+
+export function extractArrondissement(raw: unknown): { IDArrondissement: number; DésignArrondissement: string } | null {
+  if (!raw || typeof raw !== 'object') return null;
+  const record = raw as Record<string, unknown>;
+  const id = pick(record, ['IDArrondissement', 'IDArrondissment', 'Id', 'id']);
+  const label = pick(record, ['DésignArrondissement', 'DesignArrondissement', 'Libelle', 'Nom', 'libelle']);
+  if (id === undefined) return null;
+  return {
+    IDArrondissement: Number(id),
+    DésignArrondissement: label !== undefined ? String(label) : String(id),
+  };
+}

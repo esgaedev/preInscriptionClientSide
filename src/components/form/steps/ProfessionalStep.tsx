@@ -6,7 +6,7 @@ import { SectionCard } from '@/components/ui/SectionCard';
 import { Select } from '@/components/ui/Select';
 import { Input } from '@/components/ui/Input';
 import { Checkbox } from '@/components/ui/Checkbox';
-import { SECTEUR_ACTIVITE_OPTIONS, CATEGORIE_PRO_OPTIONS } from '@/constants/options';
+import { SECTEUR_ACTIVITE_OPTIONS, CATEGORIE_PRO_OPTIONS, NO_ACTIVITY_SECTOR_ID } from '@/constants/options';
 import type { PreRegistrationFormValues } from '@/types';
 
 export function ProfessionalStep() {
@@ -18,11 +18,8 @@ export function ProfessionalStep() {
 
   const secteurActivité = watch('SecteurActivité');
 
-  // Constante pour "Aucune activité"
-  const NO_ACTIVITY_ID = 4;
-
   // Vérifie si l'utilisateur a une activité professionnelle (pas "Aucune activité")
-  const hasActivity = secteurActivité !== NO_ACTIVITY_ID;
+  const hasActivity = secteurActivité !== NO_ACTIVITY_SECTOR_ID;
 
   return (
     <FormLayout title="Informations professionnelles" description="Votre activité professionnelle actuelle, le cas échéant.">
@@ -31,13 +28,23 @@ export function ProfessionalStep() {
           <Select
             label="Secteur d’activité"
             required
+            placeholder="Veuillez sélectionner votre secteur d’activité"
             options={SECTEUR_ACTIVITE_OPTIONS}
             error={errors.SecteurActivité?.message}
             {...register('SecteurActivité', { valueAsNumber: true })}
           />
+          <Input
+            label="Nombre d’années d’expérience professionnelle"
+            type="number"
+            min={0}
+            max={99}
+            placeholder="Veuillez renseigner votre nombre d’années d’expérience"
+            hint="Au maximum 2 chiffres, ex : 20 an(s) d’expérience"
+            error={errors.ExpérienceProf?.message}
+            {...register('ExpérienceProf', { valueAsNumber: true })}
+          />
         </div>
         <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
-          <Checkbox label="J’ai une expérience professionnelle" {...register('ExpérienceProf')} />
           <Checkbox label="J’ai créé mon entreprise" {...register('CréateurEntreprise')} />
         </div>
 
@@ -54,24 +61,28 @@ export function ProfessionalStep() {
                 <Input
                   label="Profession exercée"
                   required={hasActivity}
+                  placeholder="Veuillez renseigner votre profession exercée"
                   error={errors.ProfessionExercée?.message}
                   {...register('ProfessionExercée')}
                 />
                 <Input
                   label="Fonction actuelle"
                   required={hasActivity}
+                  placeholder="Veuillez renseigner votre fonction actuelle"
                   error={errors.FonctionActuelle?.message}
                   {...register('FonctionActuelle')}
                 />
                 <Input
                   label="Structure de travail"
                   required={hasActivity}
+                  placeholder="Veuillez renseigner votre structure de travail"
                   error={errors.StructureTravail?.message}
                   {...register('StructureTravail')}
                 />
                 <Select
                   label="Catégorie professionnelle"
                   required={hasActivity}
+                  placeholder="Veuillez sélectionner votre catégorie professionnelle"
                   options={CATEGORIE_PRO_OPTIONS}
                   error={errors.CatégoriePro?.message}
                   {...register('CatégoriePro', { valueAsNumber: true })}

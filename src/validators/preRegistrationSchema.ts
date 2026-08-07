@@ -7,6 +7,7 @@ import { parentsSchema } from './parentsSchema';
 import { guardianSchema } from './guardianSchema';
 import { academicSchema } from './academicSchema';
 import { diplomasSchema } from './diplomaSchema';
+import { NO_ACTIVITY_SECTOR_ID } from '@/constants/options';
 
 /**
  * Single schema backing the whole wizard. Steps call `trigger([...fieldNames])`
@@ -37,8 +38,7 @@ export const preRegistrationSchema = personalSchema
       });
     }
 
-    const NO_ACTIVITY_ID = 4;
-    if (data.SecteurActivité !== NO_ACTIVITY_ID) {
+    if (data.SecteurActivité !== NO_ACTIVITY_SECTOR_ID) {
       if (!data.ProfessionExercée.trim()) {
         ctx.addIssue({ code: 'custom', path: ['ProfessionExercée'], message: 'Précisez votre profession exercée.' });
       }

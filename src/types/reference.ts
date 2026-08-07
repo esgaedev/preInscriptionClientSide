@@ -33,3 +33,11 @@ export interface Nationality {
   DésignNationalité: string;
   [key: string]: unknown;
 }
+
+export interface Arrondissement {
+  /** Numeric id — this is the only value sent back to the API as `IDArrondissement`. */
+  IDArrondissement: number;
+  /** Human-readable label shown in the Select (e.g. "Bacongo", "Pas d'arrondissement"). */
+  DésignArrondissement: string;
+  [key: string]: unknown;
+}

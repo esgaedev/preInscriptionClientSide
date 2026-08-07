@@ -23,6 +23,7 @@ export function FamilyStep() {
           <Select
             label="Situation matrimoniale"
             required
+            placeholder="Veuillez sélectionner votre situation matrimoniale"
             options={SITUATION_MATRIMONIALE_OPTIONS}
             error={errors.SituationMatrimoniale?.message}
             {...register('SituationMatrimoniale', { valueAsNumber: true })}

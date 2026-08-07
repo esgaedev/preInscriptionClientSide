@@ -20,13 +20,14 @@ export function DiplomasStep() {
           <Input
             label="Diplôme"
             required
-            placeholder="Ex : Licence en Informatique"
+            placeholder="Veuillez renseigner le nom du diplôme"
             error={errors.diplomas?.[0]?.Diplôme?.message}
             {...register('diplomas.0.Diplôme')}
           />
           <Select
             label="Équivalence"
             required
+            placeholder="Veuillez sélectionner l’équivalence"
             options={NIVEAU_DIPLOME_OPTIONS}
             error={errors.diplomas?.[0]?.NiveauDiplome?.message}
             {...register('diplomas.0.NiveauDiplome', { valueAsNumber: true })}
@@ -34,6 +35,7 @@ export function DiplomasStep() {
           <Select
             label="Mention"
             required
+            placeholder="Veuillez sélectionner la mention"
             options={MENTION_OPTIONS}
             error={errors.diplomas?.[0]?.Mention?.message}
             {...register('diplomas.0.Mention')}
@@ -42,21 +44,21 @@ export function DiplomasStep() {
             label="Année d'obtention"
             required
             type="number"
-            placeholder="2024"
+            placeholder="Veuillez renseigner l’année d’obtention"
             error={errors.diplomas?.[0]?.Année?.message}
             {...register('diplomas.0.Année', { valueAsNumber: true })}
           />
           <Input
             label="Établissement d'obtention"
             required
-            placeholder="Ex : Université Marien Ngouabi"
+            placeholder="Veuillez renseigner l’établissement d’obtention"
             error={errors.diplomas?.[0]?.ETS?.message}
             {...register('diplomas.0.ETS')}
           />
           <Input
             label="Ville"
             required
-            placeholder="Ex : Brazzaville"
+            placeholder="Veuillez renseigner la ville d’obtention"
             error={errors.diplomas?.[0]?.Lieu?.message}
             {...register('diplomas.0.Lieu')}
           />

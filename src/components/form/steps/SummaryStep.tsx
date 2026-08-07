@@ -126,7 +126,10 @@ export function SummaryStep({ onEditStep }: SummaryStepProps) {
         onEdit={() => onEditStep('professional')}
         fields={[
           { label: 'Secteur d’activité', value: secteurLabel },
-          { label: 'Expérience professionnelle', value: values.ExpérienceProf ? YES : NO },
+          {
+            label: 'Expérience professionnelle',
+            value: values.ExpérienceProf > 0 ? `${values.ExpérienceProf} an(s)` : NO,
+          },
           { label: 'Fonction actuelle', value: values.FonctionActuelle },
           { label: 'Structure de travail', value: values.StructureTravail },
         ]}

@@ -1,6 +1,6 @@
 import { useFormContext, Controller } from 'react-hook-form';
 import { useMemo } from 'react';
-import { User, MapPin, Globe2, IdCard, RefreshCw } from 'lucide-react';
+import { User, MapPin, IdCard, RefreshCw } from 'lucide-react';
 import { FormLayout } from '@/components/form/FormLayout';
 import { SectionCard } from '@/components/ui/SectionCard';
 import { Input } from '@/components/ui/Input';
@@ -11,7 +11,7 @@ import { RadioGroup } from '@/components/ui/Radio';
 import { FieldSkeleton } from '@/components/ui/Skeleton';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { useNationalities } from '@/hooks/useNationalities';
-import { getCountryFromNationality } from '@/utils/validation';
+import { COUNTRY_OPTIONS } from '@/constants/countries';
 import type { PreRegistrationFormValues } from '@/types';
 
 export function PersonalStep() {
@@ -35,6 +35,11 @@ export function PersonalStep() {
     [nationalitiesQuery.data]
   );
 
+  const countryOptions = useMemo(
+    () => COUNTRY_OPTIONS.map((country) => ({ value: country, label: country })),
+    [],
+  );
+
   return (
     <FormLayout
       title="Informations personnelles"
@@ -45,7 +50,7 @@ export function PersonalStep() {
           <Input
             label="Matricule du baccalauréat"
             required
-            placeholder="Ex : 1234567"
+            placeholder="Veuillez renseigner votre matricule"
             error={errors.MatriculeBac?.message}
             {...register('MatriculeBac')}
           />
@@ -65,6 +70,7 @@ export function PersonalStep() {
             label="Nom"
             required
             icon={<User className="h-4 w-4" />}
+            placeholder="Veuillez renseigner votre nom"
             error={errors.Nom?.message}
             {...register('Nom')}
           />
@@ -72,6 +78,7 @@ export function PersonalStep() {
             label="Prénom"
             required
             icon={<User className="h-4 w-4" />}
+            placeholder="Veuillez renseigner votre prénom"
             error={errors.Prenom?.message}
             {...register('Prenom')}
           />
@@ -86,13 +93,15 @@ export function PersonalStep() {
             label="Lieu de naissance"
             required
             icon={<MapPin className="h-4 w-4" />}
+            placeholder="Veuillez renseigner votre lieu de naissance"
             error={errors.LieuNais?.message}
             {...register('LieuNais')}
           />
-          <Input
+          <Select
             label="Pays d’origine"
             required
-            icon={<Globe2 className="h-4 w-4" />}
+            placeholder="Veuillez sélectionner votre pays d’origine"
+            options={countryOptions}
             error={errors.PaysOrigine?.message}
             {...register('PaysOrigine')}
           />
@@ -116,6 +125,7 @@ export function PersonalStep() {
             <Select
               label="Nationalité"
               required
+              placeholder="Veuillez sélectionner votre nationalité"
               value={nationaliteId || ''}
               options={nationalityOptions}
               error={errors.IDNationalité?.message}
@@ -124,13 +134,6 @@ export function PersonalStep() {
                 const option = nationalitiesQuery.data?.find((n) => n.IDNationalité === id);
                 setValue('IDNationalité', id, { shouldValidate: true });
                 setValue('DésignNationalité', option?.DésignNationalité ?? '', { shouldValidate: true });
-                // Auto-remplir le pays selon le libellé de la nationalité
-                if (option?.DésignNationalité) {
-                  const suggestedCountry = getCountryFromNationality(option.DésignNationalité);
-                  if (suggestedCountry) {
-                    setValue('PaysOrigine', suggestedCountry, { shouldValidate: true });
-                  }
-                }
               }}
             />
           )}

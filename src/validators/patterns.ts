@@ -1,7 +1,7 @@
 /** Accepts local or international phone numbers: optional leading +, 8 to 15 digits. */
 export const PHONE_REGEX = /^\+?[0-9]{8,15}$/;
 
-export const MIN_STUDENT_AGE = 14;
+export const MIN_STUDENT_AGE = 12;
 export const MAX_STUDENT_AGE = 80;
 
 export function isPlausibleBirthDate(value: string): boolean {

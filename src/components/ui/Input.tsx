@@ -34,7 +34,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             id={inputId}
             aria-invalid={Boolean(error)}
             aria-describedby={[hintId, errorId].filter(Boolean).join(' ') || undefined}
-            className={`w-full rounded-xl border bg-white dark:bg-dark-card px-4 py-2.5 text-sm text-ink dark:text-dark-text shadow-sm dark:shadow-soft-dark transition-all placeholder:text-slate-400 dark:placeholder:text-dark-text-secondary/50 focus:outline-none focus:ring-2 focus:ring-secondary-400/60 dark:focus:ring-primary-400/60 ${
+            className={`w-full rounded-xl border bg-white dark:bg-dark-card px-4 py-2.5 text-sm text-ink dark:text-dark-text shadow-sm dark:shadow-soft-dark transition-all placeholder:text-slate-400 dark:placeholder:text-dark-text-secondary/50 focus:outline-none focus:ring-2 focus:ring-secondary-400/60 dark:focus:ring-primary-400/60 read-only:cursor-not-allowed read-only:bg-slate-100 read-only:text-ink-soft/70 dark:read-only:bg-dark-surface dark:read-only:text-dark-text-secondary/70 ${
               icon ? 'pl-10' : ''
             } ${
               error
