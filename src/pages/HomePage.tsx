@@ -98,13 +98,13 @@ export function HomePage() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: '-40px' }}
               transition={{ duration: 0.4, delay: index * 0.1 }}
-              className="rounded-2xl border border-slate-100 bg-white p-6 shadow-soft"
+              className="rounded-2xl border border-slate-100 dark:border-dark-border bg-white dark:bg-dark-card p-6 shadow-soft dark:shadow-soft-dark transition-colors duration-300"
             >
-              <span className="mb-4 flex h-11 w-11 items-center justify-center rounded-xl bg-primary-50 text-primary-600">
+              <span className="mb-4 flex h-11 w-11 items-center justify-center rounded-xl bg-primary-50 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400 transition-colors duration-300">
                 <item.icon className="h-5 w-5" />
               </span>
-              <h3 className="font-heading text-base font-semibold text-primary-700">{item.title}</h3>
-              <p className="mt-1.5 text-sm text-ink-soft/70">{item.description}</p>
+              <h3 className="font-heading text-base font-semibold text-primary-700 dark:text-primary-400 transition-colors duration-300">{item.title}</h3>
+              <p className="mt-1.5 text-sm text-ink-soft/70 dark:text-dark-text-secondary/70 transition-colors duration-300">{item.description}</p>
             </motion.div>
           ))}
         </div>

@@ -60,7 +60,7 @@ export const DEFAULT_FORM_VALUES: PreRegistrationFormValues = {
       _localId: 'diploma-0',
       Diplôme: '',
       Mention: '',
-      Année: new Date().getFullYear(),
+      Année: 0,
       ETS: '',
       Lieu: '',
       NiveauDiplome: 0,

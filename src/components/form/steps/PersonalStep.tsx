@@ -82,12 +82,20 @@ export function PersonalStep() {
             error={errors.Prenom?.message}
             {...register('Prenom')}
           />
-          <DatePicker
-            label="Date de naissance"
-            required
-            max={new Date().toISOString().slice(0, 10)}
-            error={errors.DateNais?.message}
-            {...register('DateNais')}
+          <Controller
+            control={control}
+            name="DateNais"
+            render={({ field }) => (
+              <DatePicker
+                label="Date de naissance"
+                required
+                hint="jj/mm/aaaa"
+                error={errors.DateNais?.message}
+                value={field.value}
+                onChange={field.onChange}
+                onBlur={field.onBlur}
+              />
+            )}
           />
           <Input
             label="Lieu de naissance"

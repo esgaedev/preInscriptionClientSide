@@ -1,4 +1,4 @@
-import { useFormContext } from 'react-hook-form';
+import { useFormContext, Controller } from 'react-hook-form';
 import { Award } from 'lucide-react';
 import { FormLayout } from '@/components/form/FormLayout';
 import { SectionCard } from '@/components/ui/SectionCard';
@@ -10,6 +10,7 @@ import type { PreRegistrationFormValues } from '@/types';
 export function DiplomasStep() {
   const {
     register,
+    control,
     formState: { errors },
   } = useFormContext<PreRegistrationFormValues>();
 
@@ -40,13 +41,21 @@ export function DiplomasStep() {
             error={errors.diplomas?.[0]?.Mention?.message}
             {...register('diplomas.0.Mention')}
           />
-          <Input
-            label="Année d'obtention"
-            required
-            type="number"
-            placeholder="Veuillez renseigner l’année d’obtention"
-            error={errors.diplomas?.[0]?.Année?.message}
-            {...register('diplomas.0.Année', { valueAsNumber: true })}
+          <Controller
+            control={control}
+            name="diplomas.0.Année"
+            render={({ field }) => (
+              <Input
+                label="Année d'obtention"
+                required
+                type="number"
+                placeholder="Veuillez renseigner l’année d’obtention"
+                error={errors.diplomas?.[0]?.Année?.message}
+                value={field.value || ''}
+                onChange={(event) => field.onChange(event.target.value === '' ? 0 : Number(event.target.value))}
+                onBlur={field.onBlur}
+              />
+            )}
           />
           <Input
             label="Établissement d'obtention"

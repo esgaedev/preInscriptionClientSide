@@ -39,6 +39,10 @@ export function GuardianStep() {
   );
 
   const isReadOnly = tuteurSource !== 'autre';
+  // When the guardian is the student themself, they don't have a father's/
+  // mother's job info to inherit — let them fill in their own Fonction and
+  // Lieu de travail instead of locking those two fields too.
+  const isWorkInfoReadOnly = tuteurSource === 'père' || tuteurSource === 'mère';
 
   const handleSourceChange = (value: string) => {
     const source = value as TuteurSource;
@@ -111,14 +115,14 @@ export function GuardianStep() {
           )}
           <Input
             label="Fonction"
-            readOnly={isReadOnly}
+            readOnly={isWorkInfoReadOnly}
             placeholder="Veuillez renseigner la fonction du tuteur"
             error={errors.FonctionTuteur?.message}
             {...register('FonctionTuteur')}
           />
           <Input
             label="Lieu de travail"
-            readOnly={isReadOnly}
+            readOnly={isWorkInfoReadOnly}
             placeholder="Veuillez renseigner le lieu de travail du tuteur"
             error={errors.LieuTravailTuteur?.message}
             {...register('LieuTravailTuteur')}
