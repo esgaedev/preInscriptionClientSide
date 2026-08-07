@@ -1,7 +1,7 @@
 // Constantes pour les endpoints API
 const API_BASE = '/API';
 const ENDPOINTS = {
-  ACADEMIC_YEARS: '/AnneeAcademique',
+  ACADEMIC_YEARS: '/AnneeAcademiqueEncours',
   COURSES: '/ParcoursGet',
   NATIONALITIES: '/Nationalite',
   ARRONDISSEMENTS: '/Arrondissement',

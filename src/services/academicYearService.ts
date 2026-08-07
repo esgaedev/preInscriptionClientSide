@@ -3,14 +3,12 @@ import { API_ENDPOINTS } from '@/constants/api';
 import { extractAcademicYear } from '@/utils/normalizers';
 
 /**
- * Fetches every academic year the API knows about and returns only the first
- * one — the form must never let the user choose it, per spec.
+ * Fetches the current academic year directly from the API.
+ * The endpoint returns a single JSON object with the academic year value.
  */
 export async function fetchDefaultAcademicYear(): Promise<string> {
-  const { data } = await axiosClient.get<unknown[]>(API_ENDPOINTS.academicYears);
-  const list = Array.isArray(data) ? data : [];
-  const first = list[0];
-  const year = extractAcademicYear(first);
+  const { data } = await axiosClient.get<unknown>(API_ENDPOINTS.academicYears);
+  const year = extractAcademicYear(data);
   if (!year) {
     throw new Error("Aucune année académique n'est disponible pour le moment.");
   }
