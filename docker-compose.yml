@@ -11,7 +11,7 @@ services:
       - "8030:8030"
     environment:
       - NODE_ENV=production
-      - API_BASE_URL=${API_BASE_URL:-http://172.16.0.151}
+      - API_BACKEND_URL=${API_BACKEND_URL:-http://172.16.0.151}
     networks:
       - app-network
 

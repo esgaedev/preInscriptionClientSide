@@ -25,12 +25,9 @@ RUN apk add --no-cache curl gettext
 
 COPY --from=build /app/dist /usr/share/nginx/html
 
-# Copy config template
-COPY public/config.js /usr/share/nginx/html/config.js.template
-
-# Runtime config: use envsubst in entrypoint script
-ENV API_BASE_URL=http://172.16.0.151
-RUN <<'EOF' cat > /etc/nginx/conf.d/default.conf
+# Runtime config: nginx template with environment variable substitution
+ENV API_BACKEND_URL=http://172.16.0.151
+RUN <<'EOF' cat > /etc/nginx/conf.d/default.conf.template
 server {
     listen 8030;
     server_name _;
@@ -41,6 +38,21 @@ server {
         access_log off;
         add_header Content-Type text/plain;
         return 200 "ok";
+    }
+
+    # Proxy API requests to backend
+    location /API/ {
+        proxy_pass ${API_BACKEND_URL}/API/;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        
+        # CORS headers (add them since backend doesn't)
+        add_header Access-Control-Allow-Origin * always;
+        add_header Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS" always;
+        add_header Access-Control-Allow-Headers "Content-Type, Authorization" always;
     }
 
     location / {
@@ -57,9 +69,9 @@ EOF
 # Create entrypoint script to substitute environment variables
 RUN <<'EOF' cat > /docker-entrypoint.sh
 #!/bin/sh
-# Replace ${API_BASE_URL} with actual environment variable value
-export API_BASE_URL=${API_BASE_URL:-http://172.16.0.151}
-envsubst '${API_BASE_URL}' < /usr/share/nginx/html/config.js.template > /usr/share/nginx/html/config.js
+# Substitute environment variables in nginx config
+export API_BACKEND_URL=${API_BACKEND_URL:-http://172.16.0.151}
+envsubst '${API_BACKEND_URL}' < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf
 exec nginx -g 'daemon off;'
 EOF
 RUN chmod +x /docker-entrypoint.sh

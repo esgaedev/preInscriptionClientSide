@@ -11,9 +11,17 @@ export default defineConfig({
     host: '0.0.0.0',
     proxy: {
       '/API': {
-        target: 'http://172.16.0.151',
+        target: process.env.API_BACKEND_URL || 'http://172.16.0.151',
         changeOrigin: true,
         secure: false,
+        configure: (proxy, options) => {
+          proxy.on('proxyRes', (proxyRes) => {
+            // Add CORS headers since backend doesn't
+            proxyRes.headers['Access-Control-Allow-Origin'] = '*';
+            proxyRes.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE, OPTIONS';
+            proxyRes.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization';
+          });
+        },
       },
     },
   },

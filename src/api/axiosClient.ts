@@ -8,23 +8,10 @@ export function setAuthToken(token: string | null) {
   authToken = token;
 }
 
-// Function to get API base URL from runtime config or env var
-function getApiBaseUrl(): string {
-  if (import.meta.env.DEV) {
-    return ''; // Use Vite proxy in development
-  }
-  
-  // Try to get from runtime config (window.config)
-  if (typeof window !== 'undefined' && (window as any).config?.apiBaseUrl) {
-    return (window as any).config.apiBaseUrl;
-  }
-  
-  // Fallback to build-time env var
-  return import.meta.env.VITE_API_BASE_URL || '';
-}
-
 export const axiosClient = axios.create({
-  baseURL: getApiBaseUrl(),
+  // Use relative paths - nginx will proxy /API requests to backend
+  // This avoids CORS issues in both dev and production
+  baseURL: '',
   timeout: 60000,
   headers: {
     'Content-Type': 'application/json',
