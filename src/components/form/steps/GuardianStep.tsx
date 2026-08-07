@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { ShieldCheck } from 'lucide-react';
 import { FormLayout } from '@/components/form/FormLayout';
@@ -59,6 +59,20 @@ export function GuardianStep() {
   // Lieu de travail instead of locking those two fields too.
   const isWorkInfoReadOnly = tuteurSource === 'père' || tuteurSource === 'mère';
 
+  // Pour "moi-même", vérifier si les infos pro sont remplies pour décider si readonly
+  const fonctionActuelle = watch('FonctionActuelle');
+  const structureTravail = watch('StructureTravail');
+  const hasProfessionalInfo = fonctionActuelle?.trim() || structureTravail?.trim();
+  const isWorkInfoReadOnlyForSelf = tuteurSource === 'moi-même' && hasProfessionalInfo;
+
+  // Mettre à jour automatiquement les champs du tuteur quand les infos pro changent et que tuteurSource est "moi-même"
+  useEffect(() => {
+    if (tuteurSource === 'moi-même') {
+      setValue('FonctionTuteur', fonctionActuelle || '');
+      setValue('LieuTravailTuteur', structureTravail || '');
+    }
+  }, [fonctionActuelle, structureTravail, tuteurSource, setValue]);
+
   const handleSourceChange = (value: string) => {
     const source = value as TuteurSource;
     setTuteurSource(source);
@@ -79,8 +93,11 @@ export function GuardianStep() {
       setValue('RelationAvecTuteur', 'Mère', { shouldValidate: true });
     } else if (source === 'moi-même') {
       setValue('NomPrénomTuteur', getValues('NomPrenom'), { shouldValidate: true });
-      setValue('FonctionTuteur', '');
-      setValue('LieuTravailTuteur', '');
+      // Récupérer les informations professionnelles si elles sont remplies
+      const fonctionActuelle = getValues('FonctionActuelle');
+      const structureTravail = getValues('StructureTravail');
+      setValue('FonctionTuteur', fonctionActuelle || '');
+      setValue('LieuTravailTuteur', structureTravail || '');
       setValue('AdresseTuteur', getValues('Adresse'));
       setValue('TéléphoneTuteur', getValues('Téléphone1'), { shouldValidate: true });
       setValue('RelationAvecTuteur', 'Moi-même', { shouldValidate: true });
@@ -159,14 +176,14 @@ export function GuardianStep() {
           )}
           <Input
             label="Fonction"
-            readOnly={isWorkInfoReadOnly}
+            readOnly={isWorkInfoReadOnly || isWorkInfoReadOnlyForSelf}
             placeholder="Veuillez renseigner la fonction du tuteur"
             error={errors.FonctionTuteur?.message}
             {...register('FonctionTuteur')}
           />
           <Input
             label="Lieu de travail"
-            readOnly={isWorkInfoReadOnly}
+            readOnly={isWorkInfoReadOnly || isWorkInfoReadOnlyForSelf}
             placeholder="Veuillez renseigner le lieu de travail du tuteur"
             error={errors.LieuTravailTuteur?.message}
             {...register('LieuTravailTuteur')}
