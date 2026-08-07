@@ -20,13 +20,16 @@ RUN npm run build
 
 FROM nginx:alpine
 
-# Install curl for healthcheck
-RUN apk add --no-cache curl
+# Install curl and envsubst for runtime config
+RUN apk add --no-cache curl gettext
 
 COPY --from=build /app/dist /usr/share/nginx/html
 
-# No API reverse-proxy anymore: the frontend calls VITE_API_BASE_URL
-# directly, so nginx only needs to serve the static SPA build.
+# Copy config template
+COPY public/config.js /usr/share/nginx/html/config.js.template
+
+# Runtime config: use envsubst in entrypoint script
+ENV API_BASE_URL=http://172.16.0.151
 RUN <<'EOF' cat > /etc/nginx/conf.d/default.conf
 server {
     listen 8030;
@@ -51,9 +54,19 @@ server {
 }
 EOF
 
+# Create entrypoint script to substitute environment variables
+RUN <<'EOF' cat > /docker-entrypoint.sh
+#!/bin/sh
+# Replace ${API_BASE_URL} with actual environment variable value
+export API_BASE_URL=${API_BASE_URL:-http://172.16.0.151}
+envsubst '${API_BASE_URL}' < /usr/share/nginx/html/config.js.template > /usr/share/nginx/html/config.js
+exec nginx -g 'daemon off;'
+EOF
+RUN chmod +x /docker-entrypoint.sh
+
 EXPOSE 8030
 
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
   CMD curl -f http://localhost:8030/health || exit 1
 
-CMD ["nginx", "-g", "daemon off;"]
+CMD ["/docker-entrypoint.sh"]

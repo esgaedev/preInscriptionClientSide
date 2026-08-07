@@ -8,10 +8,23 @@ export function setAuthToken(token: string | null) {
   authToken = token;
 }
 
+// Function to get API base URL from runtime config or env var
+function getApiBaseUrl(): string {
+  if (import.meta.env.DEV) {
+    return ''; // Use Vite proxy in development
+  }
+  
+  // Try to get from runtime config (window.config)
+  if (typeof window !== 'undefined' && (window as any).config?.apiBaseUrl) {
+    return (window as any).config.apiBaseUrl;
+  }
+  
+  // Fallback to build-time env var
+  return import.meta.env.VITE_API_BASE_URL || '';
+}
+
 export const axiosClient = axios.create({
-  // In development, use relative path to leverage Vite proxy (avoid CORS)
-  // In production, use the full API URL from environment variable
-  baseURL: import.meta.env.DEV ? '' : import.meta.env.VITE_API_BASE_URL,
+  baseURL: getApiBaseUrl(),
   timeout: 60000,
   headers: {
     'Content-Type': 'application/json',
