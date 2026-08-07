@@ -9,6 +9,13 @@ export default defineConfig({
 
   server: {
     host: '0.0.0.0',
+    proxy: {
+      '/API': {
+        target: 'http://172.16.0.151',
+        changeOrigin: true,
+        secure: false,
+      },
+    },
   },
 
   resolve: {
