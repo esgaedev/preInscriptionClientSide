@@ -9,12 +9,14 @@ export function setAuthToken(token: string | null) {
 }
 
 export const axiosClient = axios.create({
-  baseURL: '', // baseURL vide pour éviter le doublon /API/API/
+  // Calls the backend directly (e.g. http://172.16.0.151) — no more nginx
+  // reverse-proxy in front of it. Baked into the JS bundle at build time by
+  // Vite, see the ARG/ENV wiring in the Dockerfile.
+  baseURL: import.meta.env.VITE_API_BASE_URL,
   timeout: 60000,
   headers: {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
-    'ngrok-skip-browser-warning': 'true',
   },
 });
 

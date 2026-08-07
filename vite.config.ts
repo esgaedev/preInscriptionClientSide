@@ -1,39 +1,14 @@
-import { defineConfig, loadEnv } from 'vite'
+import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import path from 'path'
 
-export default defineConfig(({ mode }) => {
-  const env = loadEnv(mode, process.cwd(), '')
-  return {
+// The frontend calls VITE_API_BASE_URL directly (no more dev-server proxy) —
+// see src/api/axiosClient.ts. The backend must allow CORS from this origin.
+export default defineConfig({
   plugins: [react()],
 
   server: {
     host: '0.0.0.0',
-    proxy: {
-      '/API': {
-        target: env.VITE_API_BASE_URL || 'http://localhost:8030',
-        changeOrigin: true,
-        secure: false,
-        timeout: 30000,
-        proxyTimeout: 30000,
-
-        headers: {
-          'ngrok-skip-browser-warning': 'true',
-        },
-
-        configure: (proxy, options) => {
-          proxy.on('error', (err, req, res) => {
-            console.log('proxy error', err);
-          });
-          proxy.on('proxyReq', (proxyReq, req, res) => {
-            console.log('Sending request to the target:', req.method, req.url);
-          });
-          proxy.on('proxyRes', (proxyRes, req, res) => {
-            console.log('Received response from the target:', proxyRes.statusCode, req.url);
-          });
-        },
-      },
-    },
   },
 
   resolve: {
@@ -53,5 +28,4 @@ export default defineConfig(({ mode }) => {
       '@contexts': path.resolve(__dirname, './src/contexts'),
     },
   },
-  }
 })
