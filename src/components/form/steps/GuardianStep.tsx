@@ -18,6 +18,8 @@ const SOURCE_OPTIONS = [
   { value: 'autre', label: 'Autre' },
 ];
 
+const KNOWN_RELATIONS = RELATION_TUTEUR_OPTIONS.map((o) => o.value);
+
 function sourceFromRelation(relation: string): TuteurSource {
   if (relation === 'Père') return 'père';
   if (relation === 'Mère') return 'mère';
@@ -37,6 +39,19 @@ export function GuardianStep() {
   const [tuteurSource, setTuteurSource] = useState<TuteurSource>(() =>
     sourceFromRelation(getValues('RelationAvecTuteur')),
   );
+
+  // Which choice is picked in the "Relation avec le tuteur" select. Distinct
+  // from the field's actual stored value because picking "Autre" there must
+  // resolve to the free-text relation the user types, never the literal
+  // word "Autre".
+  const [relationChoice, setRelationChoice] = useState<string>(() => {
+    const current = getValues('RelationAvecTuteur');
+    return KNOWN_RELATIONS.includes(current) ? current : current ? 'Autre' : '';
+  });
+  const [customRelation, setCustomRelation] = useState<string>(() => {
+    const current = getValues('RelationAvecTuteur');
+    return KNOWN_RELATIONS.includes(current) ? '' : current;
+  });
 
   const isReadOnly = tuteurSource !== 'autre';
   // When the guardian is the student themself, they don't have a father's/
@@ -76,7 +91,24 @@ export function GuardianStep() {
       setValue('AdresseTuteur', '');
       setValue('TéléphoneTuteur', '', { shouldValidate: true });
       setValue('RelationAvecTuteur', '', { shouldValidate: true });
+      setRelationChoice('');
+      setCustomRelation('');
     }
+  };
+
+  const handleRelationChoiceChange = (choice: string) => {
+    setRelationChoice(choice);
+    if (choice === 'Autre') {
+      setValue('RelationAvecTuteur', customRelation, { shouldValidate: true });
+    } else {
+      setCustomRelation('');
+      setValue('RelationAvecTuteur', choice, { shouldValidate: true });
+    }
+  };
+
+  const handleCustomRelationChange = (text: string) => {
+    setCustomRelation(text);
+    setValue('RelationAvecTuteur', text, { shouldValidate: true });
   };
 
   return (
@@ -102,14 +134,26 @@ export function GuardianStep() {
             {...register('NomPrénomTuteur')}
           />
           {tuteurSource === 'autre' ? (
-            <Select
-              label="Relation avec le tuteur"
-              required
-              placeholder="Veuillez sélectionner la relation avec le tuteur"
-              options={RELATION_TUTEUR_OPTIONS}
-              error={errors.RelationAvecTuteur?.message}
-              {...register('RelationAvecTuteur')}
-            />
+            <div className="grid grid-cols-1 gap-5 sm:col-span-1">
+              <Select
+                label="Relation avec le tuteur"
+                required
+                placeholder="Veuillez sélectionner la relation avec le tuteur"
+                options={RELATION_TUTEUR_OPTIONS}
+                value={relationChoice}
+                error={errors.RelationAvecTuteur?.message}
+                onChange={(event) => handleRelationChoiceChange(event.target.value)}
+              />
+              {relationChoice === 'Autre' && (
+                <Input
+                  label="Précisez la relation"
+                  required
+                  placeholder="Veuillez préciser la relation avec le tuteur"
+                  value={customRelation}
+                  onChange={(event) => handleCustomRelationChange(event.target.value)}
+                />
+              )}
+            </div>
           ) : (
             <Input label="Relation avec le tuteur" value={watch('RelationAvecTuteur')} readOnly />
           )}

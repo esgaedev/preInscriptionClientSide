@@ -22,7 +22,7 @@ export function RadioGroup({ label, name, value, onChange, options, error, requi
 
   return (
     <div role="radiogroup" aria-labelledby={`${groupId}-label`} aria-describedby={errorId}>
-      <span id={`${groupId}-label`} className="mb-1.5 block text-sm font-medium text-ink">
+      <span id={`${groupId}-label`} className="mb-1.5 block text-sm font-medium text-ink dark:text-dark-text transition-colors duration-300">
         {label}
         {required && <span className="text-secondary-600 ml-0.5">*</span>}
       </span>
@@ -34,10 +34,10 @@ export function RadioGroup({ label, name, value, onChange, options, error, requi
             <label
               key={option.value}
               htmlFor={inputId}
-              className={`cursor-pointer rounded-xl border px-4 py-2.5 text-sm font-medium transition-colors ${
+              className={`cursor-pointer rounded-xl border px-4 py-2.5 text-sm font-medium transition-colors duration-300 ${
                 checked
-                  ? 'border-primary-500 bg-primary-600 text-white shadow-sm'
-                  : 'border-slate-200 bg-white text-ink hover:border-primary-300'
+                  ? 'border-primary-500 dark:border-primary-400 bg-primary-600 dark:bg-primary-600 text-white shadow-sm'
+                  : 'border-slate-200 dark:border-dark-border bg-white dark:bg-dark-card text-ink dark:text-dark-text hover:border-primary-300 dark:hover:border-primary-500'
               }`}
             >
               <input
