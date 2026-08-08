@@ -5,7 +5,6 @@ import { FormLayout } from '@/components/form/FormLayout';
 import { SectionCard } from '@/components/ui/SectionCard';
 import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
-import { RadioGroup } from '@/components/ui/Radio';
 import { RELATION_TUTEUR_OPTIONS } from '@/constants/options';
 import type { PreRegistrationFormValues } from '@/types';
 
@@ -40,74 +39,144 @@ export function GuardianStep() {
     sourceFromRelation(getValues('RelationAvecTuteur')),
   );
 
-  // Which choice is picked in the "Relation avec le tuteur" select. Distinct
-  // from the field's actual stored value because picking "Autre" there must
-  // resolve to the free-text relation the user types, never the literal
-  // word "Autre".
-  const [relationChoice, setRelationChoice] = useState<string>(() => {
+  // Which choice is picked in the "Relation avec le tuteur" select.
+  // Distinct from the field's actual stored value because picking "Autre"
+  // there must resolve to the free-text relation the user types, never
+  // the literal word "Autre".
+  const [relationChoice, setRelationChoice] = useState(() => {
     const current = getValues('RelationAvecTuteur');
     return KNOWN_RELATIONS.includes(current) ? current : current ? 'Autre' : '';
   });
-  const [customRelation, setCustomRelation] = useState<string>(() => {
+
+  const [customRelation, setCustomRelation] = useState(() => {
     const current = getValues('RelationAvecTuteur');
     return KNOWN_RELATIONS.includes(current) ? '' : current;
   });
 
   const isReadOnly = tuteurSource !== 'autre';
+
   // When the guardian is the student themself, they don't have a father's/
   // mother's job info to inherit — let them fill in their own Fonction and
   // Lieu de travail instead of locking those two fields too.
-  const isWorkInfoReadOnly = tuteurSource === 'père' || tuteurSource === 'mère';
+  const isWorkInfoReadOnly =
+    tuteurSource === 'père' || tuteurSource === 'mère';
 
-  // Pour "moi-même", vérifier si les infos pro sont remplies pour décider si readonly
+  // Pour "moi-même", vérifier si les infos pro sont remplies
+  // pour décider si readonly.
   const fonctionActuelle = watch('FonctionActuelle');
   const structureTravail = watch('StructureTravail');
-  const hasProfessionalInfo = fonctionActuelle?.trim() || structureTravail?.trim();
-  const isWorkInfoReadOnlyForSelf = tuteurSource === 'moi-même' && hasProfessionalInfo;
 
-  // Mettre à jour automatiquement les champs du tuteur quand les infos pro changent et que tuteurSource est "moi-même"
+  // Boolean() garantit que cette valeur est toujours true ou false
+  // et non string | undefined.
+  const hasProfessionalInfo = Boolean(
+    fonctionActuelle?.trim() || structureTravail?.trim(),
+  );
+
+  const isWorkInfoReadOnlyForSelf =
+    tuteurSource === 'moi-même' && hasProfessionalInfo;
+
+  // Mettre à jour automatiquement les champs du tuteur quand les infos pro
+  // changent et que tuteurSource est "moi-même".
   useEffect(() => {
     if (tuteurSource === 'moi-même') {
       setValue('FonctionTuteur', fonctionActuelle || '');
       setValue('LieuTravailTuteur', structureTravail || '');
     }
-  }, [fonctionActuelle, structureTravail, tuteurSource, setValue]);
+  }, [
+    fonctionActuelle,
+    structureTravail,
+    tuteurSource,
+    setValue,
+  ]);
 
   const handleSourceChange = (value: string) => {
     const source = value as TuteurSource;
     setTuteurSource(source);
 
     if (source === 'père') {
-      setValue('NomPrénomTuteur', getValues('NomPrenomPère'), { shouldValidate: true });
+      setValue(
+        'NomPrénomTuteur',
+        getValues('NomPrenomPère'),
+        { shouldValidate: true },
+      );
       setValue('FonctionTuteur', getValues('FonctionPère'));
       setValue('LieuTravailTuteur', getValues('LieuTravailPère'));
       setValue('AdresseTuteur', getValues('AdressePère'));
-      setValue('TéléphoneTuteur', getValues('TéléphonePère'), { shouldValidate: true });
-      setValue('RelationAvecTuteur', 'Père', { shouldValidate: true });
+      setValue(
+        'TéléphoneTuteur',
+        getValues('TéléphonePère'),
+        { shouldValidate: true },
+      );
+      setValue(
+        'RelationAvecTuteur',
+        'Père',
+        { shouldValidate: true },
+      );
     } else if (source === 'mère') {
-      setValue('NomPrénomTuteur', getValues('NomPrenomMère'), { shouldValidate: true });
+      setValue(
+        'NomPrénomTuteur',
+        getValues('NomPrenomMère'),
+        { shouldValidate: true },
+      );
       setValue('FonctionTuteur', getValues('FonctionMère'));
       setValue('LieuTravailTuteur', getValues('LieuTravailMère'));
       setValue('AdresseTuteur', getValues('AdresseMère'));
-      setValue('TéléphoneTuteur', getValues('TéléphoneMère'), { shouldValidate: true });
-      setValue('RelationAvecTuteur', 'Mère', { shouldValidate: true });
+      setValue(
+        'TéléphoneTuteur',
+        getValues('TéléphoneMère'),
+        { shouldValidate: true },
+      );
+      setValue(
+        'RelationAvecTuteur',
+        'Mère',
+        { shouldValidate: true },
+      );
     } else if (source === 'moi-même') {
-      setValue('NomPrénomTuteur', getValues('NomPrenom'), { shouldValidate: true });
-      // Récupérer les informations professionnelles si elles sont remplies
+      setValue(
+        'NomPrénomTuteur',
+        getValues('NomPrenom'),
+        { shouldValidate: true },
+      );
+
+      // Récupérer les informations professionnelles si elles sont remplies.
       const fonctionActuelle = getValues('FonctionActuelle');
       const structureTravail = getValues('StructureTravail');
+
       setValue('FonctionTuteur', fonctionActuelle || '');
       setValue('LieuTravailTuteur', structureTravail || '');
       setValue('AdresseTuteur', getValues('Adresse'));
-      setValue('TéléphoneTuteur', getValues('Téléphone1'), { shouldValidate: true });
-      setValue('RelationAvecTuteur', 'Moi-même', { shouldValidate: true });
+
+      setValue(
+        'TéléphoneTuteur',
+        getValues('Téléphone1'),
+        { shouldValidate: true },
+      );
+
+      setValue(
+        'RelationAvecTuteur',
+        'Moi-même',
+        { shouldValidate: true },
+      );
     } else {
-      setValue('NomPrénomTuteur', '', { shouldValidate: true });
+      setValue(
+        'NomPrénomTuteur',
+        '',
+        { shouldValidate: true },
+      );
       setValue('FonctionTuteur', '');
       setValue('LieuTravailTuteur', '');
       setValue('AdresseTuteur', '');
-      setValue('TéléphoneTuteur', '', { shouldValidate: true });
-      setValue('RelationAvecTuteur', '', { shouldValidate: true });
+      setValue(
+        'TéléphoneTuteur',
+        '',
+        { shouldValidate: true },
+      );
+      setValue(
+        'RelationAvecTuteur',
+        '',
+        { shouldValidate: true },
+      );
+
       setRelationChoice('');
       setCustomRelation('');
     }
@@ -115,32 +184,39 @@ export function GuardianStep() {
 
   const handleRelationChoiceChange = (choice: string) => {
     setRelationChoice(choice);
+
     if (choice === 'Autre') {
-      setValue('RelationAvecTuteur', customRelation, { shouldValidate: true });
+      setValue(
+        'RelationAvecTuteur',
+        customRelation,
+        { shouldValidate: true },
+      );
     } else {
       setCustomRelation('');
-      setValue('RelationAvecTuteur', choice, { shouldValidate: true });
+      setValue(
+        'RelationAvecTuteur',
+        choice,
+        { shouldValidate: true },
+      );
     }
   };
 
   const handleCustomRelationChange = (text: string) => {
     setCustomRelation(text);
-    setValue('RelationAvecTuteur', text, { shouldValidate: true });
+
+    setValue(
+      'RelationAvecTuteur',
+      text,
+      { shouldValidate: true },
+    );
   };
 
   return (
-    <FormLayout title="Informations du tuteur" description="La personne à contacter en cas de besoin.">
-      <SectionCard icon={<ShieldCheck className="h-5 w-5" />} title="Qui est votre tuteur légal ?">
-        <RadioGroup
-          label="Le tuteur légal est"
-          name="tuteurSource"
-          value={tuteurSource}
-          onChange={handleSourceChange}
-          options={SOURCE_OPTIONS}
-        />
-      </SectionCard>
-
-      <SectionCard icon={<ShieldCheck className="h-5 w-5" />} title="Tuteur légal">
+    <FormLayout>
+      <SectionCard
+        icon={<ShieldCheck className="h-5 w-5" />}
+        title="Tuteur légal"
+      >
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
           <Input
             label="Nom et prénom du tuteur"
@@ -150,6 +226,7 @@ export function GuardianStep() {
             error={errors.NomPrénomTuteur?.message}
             {...register('NomPrénomTuteur')}
           />
+
           {tuteurSource === 'autre' ? (
             <div className="grid grid-cols-1 gap-5 sm:col-span-1">
               <Select
@@ -159,35 +236,51 @@ export function GuardianStep() {
                 options={RELATION_TUTEUR_OPTIONS}
                 value={relationChoice}
                 error={errors.RelationAvecTuteur?.message}
-                onChange={(event) => handleRelationChoiceChange(event.target.value)}
+                onChange={(event) =>
+                  handleRelationChoiceChange(event.target.value)
+                }
               />
+
               {relationChoice === 'Autre' && (
                 <Input
                   label="Précisez la relation"
                   required
                   placeholder="Veuillez préciser la relation avec le tuteur"
                   value={customRelation}
-                  onChange={(event) => handleCustomRelationChange(event.target.value)}
+                  onChange={(event) =>
+                    handleCustomRelationChange(event.target.value)
+                  }
                 />
               )}
             </div>
           ) : (
-            <Input label="Relation avec le tuteur" value={watch('RelationAvecTuteur')} readOnly />
+            <Input
+              label="Relation avec le tuteur"
+              value={watch('RelationAvecTuteur')}
+              readOnly
+            />
           )}
+
           <Input
             label="Fonction"
-            readOnly={isWorkInfoReadOnly || isWorkInfoReadOnlyForSelf}
+            readOnly={
+              isWorkInfoReadOnly || isWorkInfoReadOnlyForSelf
+            }
             placeholder="Veuillez renseigner la fonction du tuteur"
             error={errors.FonctionTuteur?.message}
             {...register('FonctionTuteur')}
           />
+
           <Input
             label="Lieu de travail"
-            readOnly={isWorkInfoReadOnly || isWorkInfoReadOnlyForSelf}
+            readOnly={
+              isWorkInfoReadOnly || isWorkInfoReadOnlyForSelf
+            }
             placeholder="Veuillez renseigner le lieu de travail du tuteur"
             error={errors.LieuTravailTuteur?.message}
             {...register('LieuTravailTuteur')}
           />
+
           <Input
             label="Adresse"
             readOnly={isReadOnly}
@@ -195,6 +288,7 @@ export function GuardianStep() {
             error={errors.AdresseTuteur?.message}
             {...register('AdresseTuteur')}
           />
+
           <Input
             label="Téléphone"
             required
