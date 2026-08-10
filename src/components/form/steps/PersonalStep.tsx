@@ -14,6 +14,19 @@ import { useNationalities } from '@/hooks/useNationalities';
 import { COUNTRY_OPTIONS } from '@/constants/countries';
 import type { PreRegistrationFormValues } from '@/types';
 
+// Fonction pour mettre en majuscules
+const toUpperCase = (value: string) => value?.toUpperCase() || '';
+
+// Fonction pour mettre la première lettre en majuscule et le reste en minuscule
+const toTitleCase = (value: string) => {
+  if (!value) return '';
+  return value
+    .toLowerCase()
+    .split(' ')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+};
+
 export function PersonalStep() {
   const {
     register,
@@ -72,7 +85,11 @@ export function PersonalStep() {
             icon={<User className="h-4 w-4" />}
             placeholder="Veuillez renseigner votre nom"
             error={errors.Nom?.message}
-            {...register('Nom')}
+            {...register('Nom', {
+              onChange: (e) => {
+                e.target.value = toUpperCase(e.target.value);
+              },
+            })}
           />
           <Input
             label="Prénom"
@@ -80,7 +97,11 @@ export function PersonalStep() {
             icon={<User className="h-4 w-4" />}
             placeholder="Veuillez renseigner votre prénom"
             error={errors.Prenom?.message}
-            {...register('Prenom')}
+            {...register('Prenom', {
+              onChange: (e) => {
+                e.target.value = toTitleCase(e.target.value);
+              },
+            })}
           />
           <Controller
             control={control}

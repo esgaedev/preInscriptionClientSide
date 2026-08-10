@@ -5,6 +5,16 @@ import { SectionCard } from '@/components/ui/SectionCard';
 import { Input } from '@/components/ui/Input';
 import type { PreRegistrationFormValues } from '@/types';
 
+// Fonction pour mettre la première lettre en majuscule et le reste en minuscule
+const toTitleCase = (value: string) => {
+  if (!value) return '';
+  return value
+    .toLowerCase()
+    .split(' ')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+};
+
 export function ParentsStep() {
   const {
     register,
@@ -24,7 +34,11 @@ export function ParentsStep() {
             required={!isOrphanFather}
             placeholder="Veuillez renseigner le nom et prénom du père"
             error={errors.NomPrenomPère?.message}
-            {...register('NomPrenomPère')}
+            {...register('NomPrenomPère', {
+              onChange: (e) => {
+                e.target.value = toTitleCase(e.target.value);
+              },
+            })}
           />
           <Input
             label="Fonction"
@@ -61,7 +75,11 @@ export function ParentsStep() {
             required={!isOrphanMother}
             placeholder="Veuillez renseigner le nom et prénom de la mère"
             error={errors.NomPrenomMère?.message}
-            {...register('NomPrenomMère')}
+            {...register('NomPrenomMère', {
+              onChange: (e) => {
+                e.target.value = toTitleCase(e.target.value);
+              },
+            })}
           />
           <Input
             label="Fonction"

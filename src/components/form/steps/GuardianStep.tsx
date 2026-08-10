@@ -5,10 +5,18 @@ import { FormLayout } from '@/components/form/FormLayout';
 import { SectionCard } from '@/components/ui/SectionCard';
 import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
+import { RadioGroup } from '@/components/ui/Radio';
 import { RELATION_TUTEUR_OPTIONS } from '@/constants/options';
 import type { PreRegistrationFormValues } from '@/types';
 
 type TuteurSource = 'père' | 'mère' | 'moi-même' | 'autre';
+
+const SOURCE_OPTIONS = [
+  { value: 'père', label: 'Père' },
+  { value: 'mère', label: 'Mère' },
+  { value: 'moi-même', label: 'Moi-même' },
+  { value: 'autre', label: 'Autre' },
+];
 
 const KNOWN_RELATIONS = RELATION_TUTEUR_OPTIONS.map((o) => o.value);
 
@@ -28,7 +36,7 @@ export function GuardianStep() {
     formState: { errors },
   } = useFormContext<PreRegistrationFormValues>();
 
-  const [tuteurSource] = useState<TuteurSource>(() =>
+  const [tuteurSource, setTuteurSource] = useState<TuteurSource>(() =>
     sourceFromRelation(getValues('RelationAvecTuteur')),
   );
 
@@ -124,8 +132,58 @@ export function GuardianStep() {
     );
   };
 
+  const handleSourceChange = (value: string) => {
+    const source = value as TuteurSource;
+    setTuteurSource(source);
+
+    if (source === 'père') {
+      setValue('NomPrénomTuteur', getValues('NomPrenomPère'), { shouldValidate: true });
+      setValue('FonctionTuteur', getValues('FonctionPère'));
+      setValue('LieuTravailTuteur', getValues('LieuTravailPère'));
+      setValue('AdresseTuteur', getValues('AdressePère'));
+      setValue('TéléphoneTuteur', getValues('TéléphonePère'), { shouldValidate: true });
+      setValue('RelationAvecTuteur', 'Père', { shouldValidate: true });
+    } else if (source === 'mère') {
+      setValue('NomPrénomTuteur', getValues('NomPrenomMère'), { shouldValidate: true });
+      setValue('FonctionTuteur', getValues('FonctionMère'));
+      setValue('LieuTravailTuteur', getValues('LieuTravailMère'));
+      setValue('AdresseTuteur', getValues('AdresseMère'));
+      setValue('TéléphoneTuteur', getValues('TéléphoneMère'), { shouldValidate: true });
+      setValue('RelationAvecTuteur', 'Mère', { shouldValidate: true });
+    } else if (source === 'moi-même') {
+      setValue('NomPrénomTuteur', getValues('NomPrenom'), { shouldValidate: true });
+      // Récupérer les informations professionnelles si elles sont remplies
+      const fonctionActuelle = getValues('FonctionActuelle');
+      const structureTravail = getValues('StructureTravail');
+      setValue('FonctionTuteur', fonctionActuelle || '');
+      setValue('LieuTravailTuteur', structureTravail || '');
+      setValue('AdresseTuteur', getValues('Adresse'));
+      setValue('TéléphoneTuteur', getValues('Téléphone1'), { shouldValidate: true });
+      setValue('RelationAvecTuteur', 'Moi-même', { shouldValidate: true });
+    } else {
+      setValue('NomPrénomTuteur', '', { shouldValidate: true });
+      setValue('FonctionTuteur', '');
+      setValue('LieuTravailTuteur', '');
+      setValue('AdresseTuteur', '');
+      setValue('TéléphoneTuteur', '', { shouldValidate: true });
+      setValue('RelationAvecTuteur', '', { shouldValidate: true });
+      setRelationChoice('');
+      setCustomRelation('');
+    }
+  };
+
   return (
-    <FormLayout title="Qui est votre tuteur légal ?">
+    <FormLayout title="Informations du tuteur" description="La personne à contacter en cas de besoin.">
+      <SectionCard icon={<ShieldCheck className="h-5 w-5" />} title="Qui est votre tuteur légal ?">
+        <RadioGroup
+          label="Le tuteur légal est"
+          name="tuteurSource"
+          value={tuteurSource}
+          onChange={handleSourceChange}
+          options={SOURCE_OPTIONS}
+        />
+      </SectionCard>
+
       <SectionCard
         icon={<ShieldCheck className="h-5 w-5" />}
         title="Tuteur légal"
