@@ -3,7 +3,7 @@ interface SkeletonProps {
 }
 
 export function Skeleton({ className = 'h-4 w-full' }: SkeletonProps) {
-  return <div className={`animate-pulse rounded-lg bg-slate-200 dark:bg-dark-surface ${className}`} />;
+  return <div className={`animate-pulse rounded-lg bg-slate-200 dark:bg-dark-surface/80 transition-colors duration-300 ${className}`} />;
 }
 
 export function FieldSkeleton() {

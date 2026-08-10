@@ -1,12 +1,12 @@
 /**
  * Mapping des niveaux API vers les libellés d'affichage spécifiques
  * Selon les spécifications du système:
- * - 1 → 1ère année en Licence 1
- * - 2 → 2ème année en Licence 2
- * - 3 → 3ème année en Licence 3
- * - 4 → 1ère année de Master 1
+ * - 1 → 1ère année de Licence
+ * - 2 → 2ème année de Licence
+ * - 3 → 3ème année de Licence
+ * - 4 → 1ère année de Master
  * - 5 → B+4 formation continue (CESAE)
- * - 6 → 2ème année de Master 2
+ * - 6 → 2ème année de Master
  */
 export const NIVEAU_LABELS: Record<number, string> = {
   1: '1ère année de Licence',

@@ -127,7 +127,7 @@ export function PreRegistrationPage() {
         </div>
 
         {academicYearQuery.isError && (
-          <div className="mb-6 flex items-center gap-3 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">
+          <div className="mb-6 flex items-center gap-3 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800 dark:border-amber-700/50 dark:bg-amber-950/30 dark:text-amber-200 transition-colors duration-300">
             <WifiOff className="h-4 w-4 shrink-0" />
             <span className="flex-1">
               Impossible de récupérer l’année académique en cours. Certaines étapes peuvent être indisponibles.
@@ -135,7 +135,7 @@ export function PreRegistrationPage() {
             <button
               type="button"
               onClick={() => academicYearQuery.refetch()}
-              className="inline-flex items-center gap-1.5 font-medium underline"
+              className="inline-flex items-center gap-1.5 font-medium underline dark:text-amber-300 hover:dark:text-amber-200 transition-colors duration-300"
             >
               <RefreshCw className="h-3.5 w-3.5" />
               Réessayer
