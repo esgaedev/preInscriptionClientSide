@@ -10,6 +10,7 @@ import { useCreatePreRegistration } from '@/hooks/useCreatePreRegistration';
 import { buildPreRegistrationPayload } from '@/utils/buildPreRegistrationPayload';
 import { clearDraft } from '@/hooks/usePreRegistrationDraft';
 import { DEFAULT_FORM_VALUES } from '@/constants/defaultFormValues';
+import { copyToClipboard } from '@/utils/clipboard';
 import type { PreRegistrationFormValues } from '@/types';
 
 export function ConfirmationStep() {
@@ -17,12 +18,13 @@ export function ConfirmationStep() {
   const navigate = useNavigate();
   const mutation = useCreatePreRegistration();
 
-  const handleCopyPreMatricule = (preMatricule: string) => {
-    navigator.clipboard.writeText(preMatricule).then(() => {
+  const handleCopyPreMatricule = async (preMatricule: string) => {
+    const succeeded = await copyToClipboard(preMatricule);
+    if (succeeded) {
       toast.success('Pré-matricule copié !');
-    }).catch(() => {
+    } else {
       toast.error('Erreur lors de la copie');
-    });
+    }
   };
 
   const handleNewRegistration = () => {
