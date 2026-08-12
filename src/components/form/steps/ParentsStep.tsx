@@ -5,14 +5,13 @@ import { SectionCard } from '@/components/ui/SectionCard';
 import { Input } from '@/components/ui/Input';
 import type { PreRegistrationFormValues } from '@/types';
 
-// Fonction pour mettre la première lettre en majuscule et le reste en minuscule
-const toTitleCase = (value: string) => {
+// Met en majuscule uniquement la toute première lettre saisie — le reste du
+// texte n'est jamais réécrit, pour laisser l'utilisateur taper librement
+// (casse mixte, majuscules verrouillées, etc.) sans que chaque frappe
+// n'efface ce qu'il vient de saisir.
+const capitalizeFirstLetter = (value: string) => {
   if (!value) return '';
-  return value
-    .toLowerCase()
-    .split(' ')
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ');
+  return value.charAt(0).toUpperCase() + value.slice(1);
 };
 
 export function ParentsStep() {
@@ -36,7 +35,7 @@ export function ParentsStep() {
             error={errors.NomPrenomPère?.message}
             {...register('NomPrenomPère', {
               onChange: (e) => {
-                e.target.value = toTitleCase(e.target.value);
+                e.target.value = capitalizeFirstLetter(e.target.value);
               },
             })}
           />
@@ -77,7 +76,7 @@ export function ParentsStep() {
             error={errors.NomPrenomMère?.message}
             {...register('NomPrenomMère', {
               onChange: (e) => {
-                e.target.value = toTitleCase(e.target.value);
+                e.target.value = capitalizeFirstLetter(e.target.value);
               },
             })}
           />
