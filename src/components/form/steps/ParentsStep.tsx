@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { UserRound } from 'lucide-react';
 import { FormLayout } from '@/components/form/FormLayout';
@@ -18,11 +19,24 @@ export function ParentsStep() {
   const {
     register,
     watch,
+    getValues,
+    setValue,
     formState: { errors },
   } = useFormContext<PreRegistrationFormValues>();
 
   const isOrphanFather = watch('OrphelinPère');
   const isOrphanMother = watch('OrphelinMère');
+
+  // Pré-remplit le nom du père avec celui de l'étudiant (surnom de famille
+  // partagé la plupart du temps) — une seule fois, à l'arrivée sur l'étape,
+  // et seulement si le champ est encore vide (ne jamais écraser une saisie
+  // existante). Le champ reste ensuite un input normal, librement modifiable.
+  useEffect(() => {
+    if (!getValues('NomPrenomPère')) {
+      setValue('NomPrenomPère', getValues('NomPrenom'));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <FormLayout title="Informations des parents" description="Renseignez les coordonnées de vos parents.">
