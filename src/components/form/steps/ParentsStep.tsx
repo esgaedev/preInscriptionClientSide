@@ -33,7 +33,7 @@ export function ParentsStep() {
   // existante). Le champ reste ensuite un input normal, librement modifiable.
   useEffect(() => {
     if (!getValues('NomPrenomPère')) {
-      setValue('NomPrenomPère', getValues('NomPrenom'));
+      setValue('NomPrenomPère', getValues('Nom'));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
