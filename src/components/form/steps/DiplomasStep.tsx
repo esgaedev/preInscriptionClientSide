@@ -1,18 +1,28 @@
 import { useFormContext, Controller } from 'react-hook-form';
+import { useMemo } from 'react';
 import { Award } from 'lucide-react';
 import { FormLayout } from '@/components/form/FormLayout';
 import { SectionCard } from '@/components/ui/SectionCard';
 import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
+import { Autocomplete } from '@/components/ui/Autocomplete';
 import { MENTION_OPTIONS, NIVEAU_DIPLOME_OPTIONS } from '@/constants/options';
+import { CONGO_CITIES } from '@/constants/congoCities';
 import type { PreRegistrationFormValues } from '@/types';
 
 export function DiplomasStep() {
   const {
     register,
     control,
+    watch,
+    setValue,
     formState: { errors },
   } = useFormContext<PreRegistrationFormValues>();
+
+  const cityOptions = useMemo(
+    () => CONGO_CITIES.map((city) => ({ value: city, label: city })),
+    [],
+  );
 
   return (
     <FormLayout title="Diplôme obtenu" description="Renseignez votre dernier diplôme obtenu.">
@@ -64,12 +74,21 @@ export function DiplomasStep() {
             error={errors.diplomas?.[0]?.ETS?.message}
             {...register('diplomas.0.ETS')}
           />
-          <Input
-            label="Ville"
-            required
-            placeholder="Veuillez renseigner la ville d’obtention"
-            error={errors.diplomas?.[0]?.Lieu?.message}
-            {...register('diplomas.0.Lieu')}
+          <Controller
+            control={control}
+            name="diplomas.0.Lieu"
+            render={({ field }) => (
+              <Autocomplete
+                label="Ville"
+                required
+                placeholder="Veuillez renseigner la ville d'obtention"
+                error={errors.diplomas?.[0]?.Lieu?.message}
+                value={field.value || ''}
+                onChange={field.onChange}
+                options={cityOptions}
+                storageKey="ville_diplome_history"
+              />
+            )}
           />
         </div>
       </SectionCard>
