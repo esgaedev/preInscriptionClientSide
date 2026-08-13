@@ -14,8 +14,6 @@ export function DiplomasStep() {
   const {
     register,
     control,
-    watch,
-    setValue,
     formState: { errors },
   } = useFormContext<PreRegistrationFormValues>();
 
