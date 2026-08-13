@@ -1,6 +1,6 @@
 import { forwardRef, useState, useRef, useEffect, useId } from 'react';
 import type { InputHTMLAttributes, ReactNode } from 'react';
-import { ChevronDown, X } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
 import { ErrorMessage } from './ErrorMessage';
 
 interface AutocompleteOption {
@@ -152,11 +152,6 @@ export const Autocomplete = forwardRef<HTMLInputElement, AutocompleteProps>(
           }
           break;
       }
-    };
-
-    const handleClear = () => {
-      onChange('');
-      inputRef.current?.focus();
     };
 
     const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
