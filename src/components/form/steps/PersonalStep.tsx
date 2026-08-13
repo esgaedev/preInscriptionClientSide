@@ -10,8 +10,10 @@ import { Upload } from '@/components/ui/Upload';
 import { RadioGroup } from '@/components/ui/Radio';
 import { FieldSkeleton } from '@/components/ui/Skeleton';
 import { EmptyState } from '@/components/ui/EmptyState';
+import { Autocomplete } from '@/components/ui/Autocomplete';
 import { useNationalities } from '@/hooks/useNationalities';
 import { COUNTRY_OPTIONS } from '@/constants/countries';
+import { CONGO_CITIES } from '@/constants/congoCities';
 import type { PreRegistrationFormValues } from '@/types';
 
 // Fonction pour mettre en majuscules
@@ -50,6 +52,11 @@ export function PersonalStep() {
 
   const countryOptions = useMemo(
     () => COUNTRY_OPTIONS.map((country) => ({ value: country, label: country })),
+    [],
+  );
+
+  const cityOptions = useMemo(
+    () => CONGO_CITIES.map((city) => ({ value: city, label: city })),
     [],
   );
 
@@ -118,13 +125,16 @@ export function PersonalStep() {
               />
             )}
           />
-          <Input
+          <Autocomplete
             label="Lieu de naissance"
             required
             icon={<MapPin className="h-4 w-4" />}
             placeholder="Veuillez renseigner votre lieu de naissance"
             error={errors.LieuNais?.message}
-            {...register('LieuNais')}
+            value={watch('LieuNais') || ''}
+            onChange={(value) => setValue('LieuNais', value)}
+            options={cityOptions}
+            storageKey="lieu_naissance_history"
           />
           <Select
             label="Pays d’origine"

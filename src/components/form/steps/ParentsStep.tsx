@@ -4,6 +4,7 @@ import { UserRound } from 'lucide-react';
 import { FormLayout } from '@/components/form/FormLayout';
 import { SectionCard } from '@/components/ui/SectionCard';
 import { Input } from '@/components/ui/Input';
+import { Autocomplete } from '@/components/ui/Autocomplete';
 import type { PreRegistrationFormValues } from '@/types';
 
 // Met en majuscule uniquement la toute première lettre saisie — le reste du
@@ -35,6 +36,14 @@ export function ParentsStep() {
     if (!getValues('NomPrenomPère')) {
       setValue('NomPrenomPère', getValues('Nom'));
     }
+    // Pré-remplit l'adresse des parents avec celle de l'étudiant
+    const studentAddress = getValues('Adresse');
+    if (studentAddress && !getValues('AdressePère')) {
+      setValue('AdressePère', studentAddress);
+    }
+    if (studentAddress && !getValues('AdresseMère')) {
+      setValue('AdresseMère', studentAddress);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -53,17 +62,21 @@ export function ParentsStep() {
               },
             })}
           />
-          <Input
+          <Autocomplete
             label="Fonction"
             placeholder="Veuillez renseigner la fonction du père"
             error={errors.FonctionPère?.message}
-            {...register('FonctionPère')}
+            value={watch('FonctionPère') || ''}
+            onChange={(value) => setValue('FonctionPère', value)}
+            storageKey="fonction_history"
           />
-          <Input
+          <Autocomplete
             label="Lieu de travail"
             placeholder="Veuillez renseigner le lieu de travail du père"
             error={errors.LieuTravailPère?.message}
-            {...register('LieuTravailPère')}
+            value={watch('LieuTravailPère') || ''}
+            onChange={(value) => setValue('LieuTravailPère', value)}
+            storageKey="lieu_travail_history"
           />
           <Input
             label="Adresse"
@@ -94,17 +107,21 @@ export function ParentsStep() {
               },
             })}
           />
-          <Input
+          <Autocomplete
             label="Fonction"
             placeholder="Veuillez renseigner la fonction de la mère"
             error={errors.FonctionMère?.message}
-            {...register('FonctionMère')}
+            value={watch('FonctionMère') || ''}
+            onChange={(value) => setValue('FonctionMère', value)}
+            storageKey="fonction_history"
           />
-          <Input
+          <Autocomplete
             label="Lieu de travail"
             placeholder="Veuillez renseigner le lieu de travail de la mère"
             error={errors.LieuTravailMère?.message}
-            {...register('LieuTravailMère')}
+            value={watch('LieuTravailMère') || ''}
+            onChange={(value) => setValue('LieuTravailMère', value)}
+            storageKey="lieu_travail_history"
           />
           <Input
             label="Adresse"

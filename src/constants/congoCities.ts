@@ -1,0 +1,46 @@
+/**
+ * Liste des villes de la République du Congo
+ * Source: Administrative divisions of the Republic of the Congo
+ */export const CONGO_CITIES = [
+  // Principales villes
+  'Brazzaville',
+  'Pointe-Noire',
+  'Dolisie',
+  'Nkayi',
+  'Ouesso',
+  'Madingou',
+  'Kinkala',
+  'Impfondo',
+  'Owando',
+  'Djambala',
+  'Gamboma',
+  'Ewo',
+  'Mossendjo',
+  'Sibiti',
+  'Mouyondzi',
+  'Loudima',
+  'Kindamba',
+  'Mindouli',
+  'Makoua',
+  'Boundji',
+  'Oyo',
+  'Etoumbi',
+  'Kellé',
+  'Komono',
+  'Zanaga',
+  'Sembe',
+  'Bétou',
+  'Dongou',
+  'Épéna',
+  'Lekana',
+  'Mpouya',
+  'Mbe',
+  'Mayama',
+  'Boko',
+  'Mvoula',
+  'Mvouti',
+  'Loango',
+  'Djeno',
+] as const;
+
+export type CongoCity = typeof CONGO_CITIES[number];
