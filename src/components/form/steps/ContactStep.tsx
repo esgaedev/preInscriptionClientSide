@@ -1,18 +1,21 @@
-import { useFormContext } from 'react-hook-form';
+import { useFormContext, Controller } from 'react-hook-form';
 import { useMemo } from 'react';
 import { Mail, MapPin, Phone, RefreshCw } from 'lucide-react';
 import { FormLayout } from '@/components/form/FormLayout';
 import { SectionCard } from '@/components/ui/SectionCard';
 import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
+import { Autocomplete } from '@/components/ui/Autocomplete';
 import { FieldSkeleton } from '@/components/ui/Skeleton';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { useArrondissements } from '@/hooks/useArrondissements';
+import { NEIGHBORHOODS } from '@/constants/neighborhoods';
 import type { PreRegistrationFormValues } from '@/types';
 
 export function ContactStep() {
   const {
     register,
+    control,
     setValue,
     watch,
     formState: { errors },
@@ -27,6 +30,11 @@ export function ContactStep() {
       label: a.DésignArrondissement,
     })),
     [arrondissementsQuery.data],
+  );
+
+  const neighborhoodOptions = useMemo(
+    () => NEIGHBORHOODS.map((neighborhood) => ({ value: neighborhood, label: neighborhood })),
+    [],
   );
 
   return (
@@ -73,12 +81,21 @@ export function ContactStep() {
             error={errors.Adresse?.message}
             {...register('Adresse')}
           />
-          <Input
-            label="Quartier"
-            required
-            placeholder="Veuillez renseigner votre quartier"
-            error={errors.Quartier?.message}
-            {...register('Quartier')}
+          <Controller
+            control={control}
+            name="Quartier"
+            render={({ field }) => (
+              <Autocomplete
+                label="Quartier"
+                required
+                placeholder="Veuillez renseigner votre quartier"
+                error={errors.Quartier?.message}
+                value={field.value || ''}
+                onChange={field.onChange}
+                options={neighborhoodOptions}
+                storageKey="quartier_history"
+              />
+            )}
           />
 
           {arrondissementsQuery.isLoading ? (

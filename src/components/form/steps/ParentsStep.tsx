@@ -1,10 +1,11 @@
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { UserRound } from 'lucide-react';
 import { FormLayout } from '@/components/form/FormLayout';
 import { SectionCard } from '@/components/ui/SectionCard';
 import { Input } from '@/components/ui/Input';
 import { Autocomplete } from '@/components/ui/Autocomplete';
+import { PROFESSIONS } from '@/constants/professions';
 import type { PreRegistrationFormValues } from '@/types';
 
 // Met en majuscule uniquement la toute première lettre saisie — le reste du
@@ -27,6 +28,11 @@ export function ParentsStep() {
 
   const isOrphanFather = watch('OrphelinPère');
   const isOrphanMother = watch('OrphelinMère');
+
+  const professionOptions = useMemo(
+    () => PROFESSIONS.map((profession) => ({ value: profession, label: profession })),
+    [],
+  );
 
   // Pré-remplit le nom du père avec celui de l'étudiant (surnom de famille
   // partagé la plupart du temps) — une seule fois, à l'arrivée sur l'étape,
@@ -68,6 +74,7 @@ export function ParentsStep() {
             error={errors.FonctionPère?.message}
             value={watch('FonctionPère') || ''}
             onChange={(value) => setValue('FonctionPère', value)}
+            options={professionOptions}
             storageKey="fonction_history"
           />
           <Autocomplete
@@ -113,6 +120,7 @@ export function ParentsStep() {
             error={errors.FonctionMère?.message}
             value={watch('FonctionMère') || ''}
             onChange={(value) => setValue('FonctionMère', value)}
+            options={professionOptions}
             storageKey="fonction_history"
           />
           <Autocomplete

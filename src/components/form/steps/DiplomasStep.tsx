@@ -8,6 +8,7 @@ import { Select } from '@/components/ui/Select';
 import { Autocomplete } from '@/components/ui/Autocomplete';
 import { MENTION_OPTIONS, NIVEAU_DIPLOME_OPTIONS } from '@/constants/options';
 import { CONGO_CITIES } from '@/constants/congoCities';
+import { ESTABLISHMENTS } from '@/constants/establishments';
 import type { PreRegistrationFormValues } from '@/types';
 
 export function DiplomasStep() {
@@ -19,6 +20,11 @@ export function DiplomasStep() {
 
   const cityOptions = useMemo(
     () => CONGO_CITIES.map((city) => ({ value: city, label: city })),
+    [],
+  );
+
+  const establishmentOptions = useMemo(
+    () => ESTABLISHMENTS.map((establishment) => ({ value: establishment, label: establishment })),
     [],
   );
 
@@ -65,12 +71,21 @@ export function DiplomasStep() {
               />
             )}
           />
-          <Input
-            label="Établissement d'obtention"
-            required
-            placeholder="Veuillez renseigner l’établissement d’obtention"
-            error={errors.diplomas?.[0]?.ETS?.message}
-            {...register('diplomas.0.ETS')}
+          <Controller
+            control={control}
+            name="diplomas.0.ETS"
+            render={({ field }) => (
+              <Autocomplete
+                label="Établissement d'obtention"
+                required
+                placeholder="Veuillez renseigner l'établissement d'obtention"
+                error={errors.diplomas?.[0]?.ETS?.message}
+                value={field.value || ''}
+                onChange={field.onChange}
+                options={establishmentOptions}
+                storageKey="etablissement_history"
+              />
+            )}
           />
           <Controller
             control={control}
