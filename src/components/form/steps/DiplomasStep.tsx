@@ -8,7 +8,7 @@ import { Select } from '@/components/ui/Select';
 import { Autocomplete } from '@/components/ui/Autocomplete';
 import { MENTION_OPTIONS, NIVEAU_DIPLOME_OPTIONS } from '@/constants/options';
 import { CONGO_CITIES } from '@/constants/congoCities';
-import { ESTABLISHMENTS } from '@/constants/establishments';
+import lycees from '@/data/lycees.json';
 import type { PreRegistrationFormValues } from '@/types';
 
 export function DiplomasStep() {
@@ -23,10 +23,16 @@ export function DiplomasStep() {
     [],
   );
 
-  const establishmentOptions = useMemo(
-    () => ESTABLISHMENTS.map((establishment) => ({ value: establishment, label: establishment })),
-    [],
-  );
+  const establishmentOptions = useMemo(() => {
+    const seen = new Set<string>();
+    const options: { value: string; label: string }[] = [];
+    for (const { nom } of lycees) {
+      if (seen.has(nom)) continue;
+      seen.add(nom);
+      options.push({ value: nom, label: nom });
+    }
+    return options;
+  }, []);
 
   return (
     <FormLayout title="Diplôme obtenu" description="Renseignez votre dernier diplôme obtenu.">
