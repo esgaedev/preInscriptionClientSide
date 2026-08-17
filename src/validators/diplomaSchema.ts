@@ -17,7 +17,7 @@ export const diplomaLineSchema = z.object({
 });
 
 export const diplomasSchema = z.object({
-  diplomas: z.array(diplomaLineSchema).min(1, 'Ajoutez au moins un diplôme obtenu.').max(1, 'Un seul diplôme est autorisé.'),
+  diplomas: z.array(diplomaLineSchema).min(1, 'Ajoutez au moins un diplôme obtenu.').max(2, 'Deux diplômes au maximum.'),
 });
 
 export type DiplomaLineValues = z.infer<typeof diplomaLineSchema>;
