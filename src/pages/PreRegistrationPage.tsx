@@ -3,7 +3,7 @@ import { FormProvider, useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AnimatePresence, motion } from 'framer-motion';
 import { toast } from 'sonner';
-import { ArrowLeft, ArrowRight, RefreshCw, WifiOff } from 'lucide-react';
+import { ArrowLeft, ArrowRight, RefreshCw, WifiOff, RotateCcw } from 'lucide-react';
 
 import { Stepper } from '@/components/layout/Stepper';
 import { LoadingButton } from '@/components/ui/LoadingButton';
@@ -18,9 +18,10 @@ import { DiplomasStep } from '@/components/form/steps/DiplomasStep';
 import { EngagementStep } from '@/components/form/steps/EngagementStep';
 import { SummaryStep } from '@/components/form/steps/SummaryStep';
 import { ConfirmationStep } from '@/components/form/steps/ConfirmationStep';
+import { DraftRestoreDialog } from '@/components/form/DraftRestoreDialog';
 
 import { useAcademicYears } from '@/hooks/useAcademicYears';
-import { usePreRegistrationDraft, readDraft } from '@/hooks/usePreRegistrationDraft';
+import { usePreRegistrationDraft, readDraft, clearDraft } from '@/hooks/usePreRegistrationDraft';
 import { preRegistrationSchema } from '@/validators/preRegistrationSchema';
 import { STEP_FIELDS } from '@/validators/stepFields';
 import { STEPS } from '@/constants/steps';
@@ -30,7 +31,9 @@ import type { PreRegistrationFormValues, StepId } from '@/types';
 export function PreRegistrationPage() {
   const [stepIndex, setStepIndex] = useState(0);
   const [furthestIndex, setFurthestIndex] = useState(0);
-  const hasRestoredDraft = useRef(false);
+  const [showDraftDialog, setShowDraftDialog] = useState(false);
+  const [pendingDraft, setPendingDraft] = useState<any>(null);
+  const hasCheckedDraft = useRef(false);
 
   const methods = useForm<PreRegistrationFormValues>({
     resolver: zodResolver(preRegistrationSchema),
@@ -41,20 +44,18 @@ export function PreRegistrationPage() {
 
   const academicYearQuery = useAcademicYears();
 
-  // Restore a previously saved draft once, on mount.
+  // Check for draft on mount, but don't auto-restore
   useEffect(() => {
-    if (hasRestoredDraft.current) return;
-    hasRestoredDraft.current = true;
+    if (hasCheckedDraft.current) return;
+    hasCheckedDraft.current = true;
     const draft = readDraft();
     const hasMeaningfulProgress =
       draft && (draft.stepIndex > 0 || JSON.stringify(draft.values) !== JSON.stringify(DEFAULT_FORM_VALUES));
     if (draft && hasMeaningfulProgress) {
-      reset(draft.values);
-      setStepIndex(draft.stepIndex);
-      setFurthestIndex(draft.stepIndex);
-      toast.info('Votre progression précédente a été restaurée.');
+      setPendingDraft(draft);
+      setShowDraftDialog(true);
     }
-  }, [reset]);
+  }, []);
 
   // Auto-select the (only) academic year, without ever letting the user pick it.
   useEffect(() => {
@@ -74,6 +75,37 @@ export function PreRegistrationPage() {
   usePreRegistrationDraft(watchedValues as PreRegistrationFormValues, stepIndex);
 
   const currentStep = STEPS[stepIndex];
+
+  const handleContinueDraft = () => {
+    if (pendingDraft) {
+      reset(pendingDraft.values);
+      setStepIndex(pendingDraft.stepIndex);
+      setFurthestIndex(pendingDraft.stepIndex);
+      setShowDraftDialog(false);
+      setPendingDraft(null);
+      toast.info('Votre progression précédente a été restaurée.');
+    }
+  };
+
+  const handleNewRegistration = () => {
+    clearDraft();
+    reset(DEFAULT_FORM_VALUES);
+    setStepIndex(0);
+    setFurthestIndex(0);
+    setShowDraftDialog(false);
+    setPendingDraft(null);
+    toast.success('Nouvelle préinscription démarrée.');
+  };
+
+  const handleRestart = () => {
+    if (confirm('Recommencer la préinscription ?\n\nLes informations actuellement saisies seront supprimées et vous devrez recommencer depuis le début.')) {
+      clearDraft();
+      reset(DEFAULT_FORM_VALUES);
+      setStepIndex(0);
+      setFurthestIndex(0);
+      toast.success('Formulaire réinitialisé.');
+    }
+  };
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -122,57 +154,79 @@ export function PreRegistrationPage() {
   return (
     <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6 sm:py-12">
       <FormProvider {...methods}>
-        <div className="mb-8">
-          <Stepper currentIndex={stepIndex} furthestIndex={furthestIndex} onStepClick={goToStepIndex} />
-        </div>
-
-        {academicYearQuery.isError && (
-          <div className="mb-6 flex items-center gap-3 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800 dark:border-amber-700/50 dark:bg-amber-950/30 dark:text-amber-200 transition-colors duration-300">
-            <WifiOff className="h-4 w-4 shrink-0" />
-            <span className="flex-1">
-              Impossible de récupérer l’année académique en cours. Certaines étapes peuvent être indisponibles.
-            </span>
-            <button
-              type="button"
-              onClick={() => academicYearQuery.refetch()}
-              className="inline-flex items-center gap-1.5 font-medium underline dark:text-amber-300 hover:dark:text-amber-200 transition-colors duration-300"
-            >
-              <RefreshCw className="h-3.5 w-3.5" />
-              Réessayer
-            </button>
-          </div>
-        )}
-
-        <form onSubmit={(e) => e.preventDefault()}>
-          <AnimatePresence mode="wait">
-            <motion.div key={currentStep.id}>
-              {currentStep.id === 'personal' && <PersonalStep />}
-              {currentStep.id === 'contact' && <ContactStep />}
-              {currentStep.id === 'family' && <FamilyStep />}
-              {currentStep.id === 'professional' && <ProfessionalStep />}
-              {currentStep.id === 'parents' && <ParentsStep />}
-              {currentStep.id === 'guardian' && <GuardianStep />}
-              {currentStep.id === 'academic' && <AcademicStep />}
-              {currentStep.id === 'diplomas' && <DiplomasStep />}
-              {currentStep.id === 'engagement' && <EngagementStep onNext={goNext} onPrev={goPrev} />}
-              {currentStep.id === 'summary' && <SummaryStep onEditStep={goToStepId} />}
-              {currentStep.id === 'confirmation' && <ConfirmationStep />}
-            </motion.div>
-          </AnimatePresence>
-
-          {!isConfirmationStep && !isEngagementStep && (
-            <div className="mt-8 flex items-center justify-between border-t border-slate-100 pt-6">
-              <LoadingButton type="button" variant="ghost" onClick={goPrev} disabled={isFirstStep}>
-                <ArrowLeft className="h-4 w-4" />
-                Précédent
-              </LoadingButton>
-              <LoadingButton type="button" onClick={goNext}>
-                {currentStep.id === 'summary' ? 'Confirmer et continuer' : 'Suivant'}
-                <ArrowRight className="h-4 w-4" />
-              </LoadingButton>
+        {showDraftDialog ? (
+          <DraftRestoreDialog
+            onContinue={handleContinueDraft}
+            onNewRegistration={handleNewRegistration}
+          />
+        ) : (
+          <>
+            <div className="mb-8">
+              <Stepper currentIndex={stepIndex} furthestIndex={furthestIndex} onStepClick={goToStepIndex} />
             </div>
-          )}
-        </form>
+
+            {academicYearQuery.isError && (
+              <div className="mb-6 flex items-center gap-3 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800 dark:border-amber-700/50 dark:bg-amber-950/30 dark:text-amber-200 transition-colors duration-300">
+                <WifiOff className="h-4 w-4 shrink-0" />
+                <span className="flex-1">
+                  Impossible de récupérer l'année académique en cours. Certaines étapes peuvent être indisponibles.
+                </span>
+                <button
+                  type="button"
+                  onClick={() => academicYearQuery.refetch()}
+                  className="inline-flex items-center gap-1.5 font-medium underline dark:text-amber-300 hover:dark:text-amber-200 transition-colors duration-300"
+                >
+                  <RefreshCw className="h-3.5 w-3.5" />
+                  Réessayer
+                </button>
+              </div>
+            )}
+
+            <form onSubmit={(e) => e.preventDefault()}>
+              <AnimatePresence mode="wait">
+                <motion.div key={currentStep.id}>
+                  {currentStep.id === 'personal' && <PersonalStep />}
+                  {currentStep.id === 'contact' && <ContactStep />}
+                  {currentStep.id === 'family' && <FamilyStep />}
+                  {currentStep.id === 'professional' && <ProfessionalStep />}
+                  {currentStep.id === 'parents' && <ParentsStep />}
+                  {currentStep.id === 'guardian' && <GuardianStep />}
+                  {currentStep.id === 'academic' && <AcademicStep />}
+                  {currentStep.id === 'diplomas' && <DiplomasStep />}
+                  {currentStep.id === 'engagement' && <EngagementStep onNext={goNext} onPrev={goPrev} />}
+                  {currentStep.id === 'summary' && <SummaryStep onEditStep={goToStepId} />}
+                  {currentStep.id === 'confirmation' && <ConfirmationStep />}
+                </motion.div>
+              </AnimatePresence>
+
+              {!isConfirmationStep && !isEngagementStep && (
+                <div className="mt-8 flex items-center justify-between border-t border-slate-100 pt-6">
+                  <div className="flex items-center gap-2">
+                    <LoadingButton type="button" variant="ghost" onClick={goPrev} disabled={isFirstStep}>
+                      <ArrowLeft className="h-4 w-4" />
+                      Précédent
+                    </LoadingButton>
+                    {!isFirstStep && (
+                      <LoadingButton
+                        type="button"
+                        variant="ghost"
+                        onClick={handleRestart}
+                        className="text-xs"
+                      >
+                        <RotateCcw className="h-3.5 w-3.5" />
+                        Recommencer
+                      </LoadingButton>
+                    )}
+                  </div>
+                  <LoadingButton type="button" onClick={goNext}>
+                    {currentStep.id === 'summary' ? 'Confirmer et continuer' : 'Suivant'}
+                    <ArrowRight className="h-4 w-4" />
+                  </LoadingButton>
+                </div>
+              )}
+            </form>
+          </>
+        )}
       </FormProvider>
     </div>
   );
