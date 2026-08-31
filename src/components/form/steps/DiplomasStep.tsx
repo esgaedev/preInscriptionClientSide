@@ -1,6 +1,6 @@
 import { useFormContext, useWatch, Controller } from 'react-hook-form';
-import { useMemo } from 'react';
-import { Award, Plus, X } from 'lucide-react';
+import { useMemo, useEffect } from 'react';
+import { Award } from 'lucide-react';
 import { FormLayout } from '@/components/form/FormLayout';
 import { SectionCard } from '@/components/ui/SectionCard';
 import { Input } from '@/components/ui/Input';
@@ -11,7 +11,19 @@ import { CONGO_CITIES } from '@/constants/congoCities';
 import lycees from '@/data/lycees.json';
 import type { PreRegistrationFormValues } from '@/types';
 
-const LICENCE_3 = NIVEAU_DIPLOME_OPTIONS.find((option) => option.label === 'Licence 3')!;
+// Id du niveau "1ère année de Master" tel que renvoyé par l'API (ParcoursGet /
+// AcademicStep) — cf. constants/niveauLabels.ts. C'est le référentiel réel du
+// backend, distinct de la liste locale NIVEAU_DIPLOME_OPTIONS ci-dessous.
+const MASTER_1_NIVEAU_ID = 4;
+
+// Id "Licence 3" dans ce même référentiel réel du backend ("3ème année de
+// Licence" dans constants/niveauLabels.ts). NIVEAU_DIPLOME_OPTIONS ne peut pas
+// être utilisé ici : cette liste locale décale les valeurs (elle ajoute
+// "Baccalauréat" en position 1, ce que le backend ne connaît pas), donc son
+// "Licence 3" (value 4) collide en réalité avec "1ère année de Master" côté
+// API et fait échouer l'enregistrement.
+const LICENCE_3_NIVEAU_ID = 3;
+const LICENCE_3_OPTION = { value: LICENCE_3_NIVEAU_ID, label: 'Licence 3' };
 
 export function DiplomasStep() {
   const {
@@ -22,7 +34,8 @@ export function DiplomasStep() {
   } = useFormContext<PreRegistrationFormValues>();
 
   const diplomas = useWatch({ control, name: 'diplomas' });
-  const hasSecondDiploma = diplomas.length > 1;
+  const niveau = useWatch({ control, name: 'Niveau' });
+  const isMasterEnrollment = niveau === MASTER_1_NIVEAU_ID;
 
   const cityOptions = useMemo(
     () => CONGO_CITIES.map((city) => ({ value: city, label: city })),
@@ -40,31 +53,46 @@ export function DiplomasStep() {
     return options;
   }, []);
 
-  const handleAddLicence3 = () => {
-    setValue(
-      'diplomas',
-      [
-        ...diplomas,
-        {
-          _localId: 'diploma-1',
-          Diplôme: '',
-          Mention: '',
-          Année: 0,
-          ETS: '',
-          Lieu: '',
-          NiveauDiplome: LICENCE_3.value,
-        },
-      ],
-      { shouldValidate: true },
-    );
-  };
-
-  const handleRemoveSecondDiploma = () => {
-    setValue('diplomas', diplomas.slice(0, 1), { shouldValidate: true });
-  };
+  // La 2e carte diplôme (Licence 3) n'a de sens que pour une inscription en
+  // 1ère année de Master, qui l'exige — elle apparaît/disparaît automatiquement
+  // avec le niveau choisi à l'étape précédente, plutôt que d'être un ajout
+  // manuel facultatif.
+  useEffect(() => {
+    if (isMasterEnrollment && diplomas.length < 2) {
+      setValue(
+        'diplomas',
+        [
+          ...diplomas,
+          {
+            _localId: 'diploma-1',
+            Diplôme: '',
+            Mention: '',
+            Année: 0,
+            ETS: '',
+            Lieu: '',
+            NiveauDiplome: LICENCE_3_NIVEAU_ID,
+          },
+        ],
+        { shouldValidate: true },
+      );
+    } else if (!isMasterEnrollment && diplomas.length > 1) {
+      setValue('diplomas', diplomas.slice(0, 1), { shouldValidate: true });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isMasterEnrollment]);
 
   const renderFields = (index: 0 | 1, lockNiveauToLicence3: boolean) => (
     <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+      {/* _localId n'est jamais affiché mais doit rester enregistré auprès de
+          react-hook-form : sans ça, la ligne ajoutée dynamiquement (index 1)
+          perd ce champ (et NiveauDiplome ci-dessous) dès que ses champs
+          voisins s'enregistrent à leur tour, et Zod rejette la ligne entière
+          ("expected string, received undefined") — bloquant Suivant. */}
+      <input
+        type="hidden"
+        defaultValue={`diploma-${index}`}
+        {...register(`diplomas.${index}._localId`)}
+      />
       <Input
         label="Diplôme"
         required
@@ -73,13 +101,25 @@ export function DiplomasStep() {
         {...register(`diplomas.${index}.Diplôme`)}
       />
       {lockNiveauToLicence3 ? (
-        <Select
-          label="Équivalence"
-          required
-          options={[LICENCE_3]}
-          defaultValue={LICENCE_3.value}
-          disabled
-        />
+        <>
+          {/* Même raison qu'au-dessus : ce champ doit être réellement
+              enregistré pour survivre au montage tardif de la 2e carte —
+              un <select disabled> sans `register` n'est qu'un affichage,
+              pas une source de vérité pour react-hook-form. */}
+          <input
+            type="hidden"
+            defaultValue={LICENCE_3_OPTION.value}
+            {...register(`diplomas.${index}.NiveauDiplome`, { valueAsNumber: true })}
+          />
+          <Select
+            label="Équivalence"
+            required
+            options={[LICENCE_3_OPTION]}
+            value={LICENCE_3_OPTION.value}
+            disabled
+            onChange={() => {}}
+          />
+        </>
       ) : (
         <Select
           label="Équivalence"
@@ -155,31 +195,14 @@ export function DiplomasStep() {
         {renderFields(0, false)}
       </SectionCard>
 
-      {hasSecondDiploma ? (
+      {isMasterEnrollment && (
         <SectionCard
           icon={<Award className="h-5 w-5" />}
           title="Diplôme Licence 3 (Bac+3)"
-          description="À renseigner si vous possédez déjà une Licence 3."
-          action={
-            <button
-              type="button"
-              onClick={handleRemoveSecondDiploma}
-              className="inline-flex items-center gap-1.5 text-xs font-medium text-red-600 dark:text-red-400 hover:underline"
-            >
-              <X className="h-3.5 w-3.5" /> Retirer
-            </button>
-          }
+          description="Requis pour une inscription en 1ère année de Master."
         >
           {renderFields(1, true)}
         </SectionCard>
-      ) : (
-        <button
-          type="button"
-          onClick={handleAddLicence3}
-          className="flex w-full items-center justify-center gap-2 rounded-2xl border border-dashed border-slate-300 dark:border-dark-border px-5 py-4 text-sm font-medium text-primary-600 dark:text-primary-400 transition-colors hover:border-primary-400 hover:bg-primary-50/50 dark:hover:bg-primary-900/10"
-        >
-          <Plus className="h-4 w-4" /> Ajouter mon diplôme Licence 3 (Bac+3)
-        </button>
       )}
     </FormLayout>
   );
